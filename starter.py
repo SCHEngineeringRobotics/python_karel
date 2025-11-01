@@ -65,49 +65,13 @@ class StudentWorld(MainWorld):
         # Delete the pass statement and add your code here
         # To see your solution you can use the sleep command (i.e. sleep(1) to sleep 1 second)
         print("Starting Student Solution")
-        """
-        print("My starting position is " + repr(self.avatar.position))
-        print("My starting orientation is " + repr(self.avatar.orientation))
-        self.avatar.move_forward()
-        sleep(solution_period/1000.0)
-        self.turn_right()
-        sleep(solution_period/1000.0)
-        self.avatar.move_forward()
-        self.avatar.fill = "red"
-        """
 
-        while not self.check_right_wall():
-            self.turn_avatar_right()
-            self.highlight_right_wall()
-
-        sleep(1)
-        steps_taken = 0
-        max_steps = 5000
-        while not self.is_avatar_at_goal() and steps_taken < max_steps:
-            steps_taken += 1
-            sleep(self.solution_period/1000.0)
-            if self.check_right_wall():
-                if not self.check_front_wall():
-                    self.move_avatar_forward()
-                elif self.check_front_wall():
-                    self.turn_avatar_left()
-            else:
-                self.turn_avatar_right()
-                self.highlight_right_wall()
-                self.move_avatar_forward()
-            self.highlight_right_wall()
-
-        if not self.is_avatar_at_goal() and steps_taken >= max_steps:
-            print("The program terminated because of number of steps.")
-        else:
-            print("You reached the goal in %i steps" % steps_taken)
-            if self.did_actions_fail():
-                print("... but you hit a few walls along the way.")
-
-    def turn_avatar_right(self):
+        self.move_avatar_forward()
+        sleep(self.solution_period/1000.0)
         self.turn_avatar_left()
-        self.turn_avatar_left()
-        self.turn_avatar_left()
+        sleep(self.solution_period/1000.0)
+        self.move_avatar_forward()
+
 
     def keyboard_event(self, event):
         if not self.is_student_running:
@@ -115,7 +79,7 @@ class StudentWorld(MainWorld):
                 'Up': self.move_avatar_forward,
                 'Down': None,
                 'Left': self.turn_avatar_left,
-                'Right': self.turn_avatar_right,
+                'Right': None,
             }
             func = keyboard_switch.get(event.keysym, None)
             if func is not None:
