@@ -144,6 +144,7 @@ class MazeBuilder(SceneBuilder):
 
 class KarelSceneBuilder(SceneBuilder):
     def __init__(self, canvas, avatar, cell_size, scene_string_data):
+
         # Parse File Splitting on NewLine
         file_lines = scene_string_data.split("\n")
 
@@ -181,6 +182,10 @@ class KarelSceneBuilder(SceneBuilder):
             starting_col = int(tokens[2])
             starting_orientation_enum = int(tokens[3])
             starting_beepers = int(tokens[4])
+            avatar.set_position(starting_row, starting_col)
+            avatar.orientation = Orientation(starting_orientation_enum)
+            avatar.beepers = starting_beepers
+
         else:
             ValueError("The Karel World File Must have a Single Row with Robot StartRow StartCol OrientationNum "
                        "NumBeepers")

@@ -67,6 +67,9 @@ class MazeAvatar:
     def position(self):
         return self._row, self._col
 
+    def set_position(self, row, col):
+        self._row, self._col = (row, col)
+
     def rotate(self, angle_radian):
         for object_id in self.__canvas.find_withtag("arrow"):
             coordinates = self.__canvas.coords(object_id)

@@ -22,7 +22,7 @@ Inherited Functions
 
 # Students will need to click on terminal and type the following command
 # pip install simpleaudio
-# pip install -f path/to/world/maker/package/directory
+# pip install importlib_resources
 
 # Imports
 from time import sleep
@@ -53,13 +53,13 @@ class StudentWorld(MainWorld):
         super().__init__(cell_size, creation_period, solution_period, seed)
 
         # Create a Maze of the selected size (max value 100)
-        number_of_rows = 6
-        number_of_cols = 6
+        number_of_rows = 3
+        number_of_cols = 3
         self.create_maze(number_of_rows, number_of_cols)
 
         # Create a Karel World from a Formatted Text File
         # Three starter worlds are in the package (i.e. "World1.txt", "World2.txt", and "World3.txt"
-        #self.create_karel_world("World2.txt")
+        # self.create_karel_world("World1.txt")
 
     def student_solution(self):
         # Delete the pass statement and add your code here

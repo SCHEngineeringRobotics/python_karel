@@ -70,48 +70,49 @@ class MainWorld(ABC):
         btn_font = tk_font.Font(family='Arial', size=16, weight=tk_font.BOLD)
 
         # parameters
-        frame_width = 150
-        label_width = 18
-        padding = 2
+        self.frame_width = 150
+        self.label_width = 18
+        self.border_width = 5
+        self.padding = 2
 
         # Left Frame
-        self.frame_left = tk.Frame(master=self.__root, width=frame_width)
+        self.frame_left = tk.Frame(master=self.__root, width=self.frame_width)
         self.frame_left.pack(side=tk.LEFT)
 
         # Status Frame
-        self.frm_status = tk.Frame(master=self.frame_left, relief=tk.GROOVE, borderwidth=5, width=frame_width)
+        self.frm_status = tk.Frame(master=self.frame_left, relief=tk.GROOVE, borderwidth= self.border_width, width=self.frame_width)
         self.lbl_status = tk.Label(self.frm_status, text="Avatar", font=heading_font)
         self.lbl_status.pack()
-        self.lbl_orientation = tk.Label(self.frm_status, text="Orientation : EAST", width=label_width, font=btn_font)
+        self.lbl_orientation = tk.Label(self.frm_status, text="Orientation : EAST", width=self.label_width, font=btn_font)
         self.lbl_orientation.pack()
-        self.lbl_position = tk.Label(self.frm_status, text="Position : (0 , 0)", width=label_width, font=btn_font)
+        self.lbl_position = tk.Label(self.frm_status, text="Position : (0 , 0)", width=self.label_width, font=btn_font)
         self.lbl_position.pack()
         self.frm_status.pack()
 
         # Button Frame
-        self.frm_button = tk.Frame(master=self.frame_left, relief=tk.GROOVE, borderwidth=5, width=frame_width)
+        self.frm_button = tk.Frame(master=self.frame_left, relief=tk.GROOVE, borderwidth=self.border_width, width=self.frame_width)
 
         label = tk.Label(self.frm_button, text="Controls", font=heading_font)
-        label.pack(pady=padding)
+        label.pack(pady=self.padding)
         self.btn_move_forward = tk.Button(self.frm_button, text="Move Forward", foreground="blue", background="white",
-                                          font=btn_font, width=label_width)
-        self.btn_move_forward.pack(pady=padding)
+                                          font=btn_font, width=self.label_width)
+        self.btn_move_forward.pack(pady=self.padding)
         self.btn_move_forward.bind("<Button-1>", lambda event: self.move_avatar_forward())
 
         self.btn_turn_left = tk.Button(self.frm_button, text="Turn Left", foreground="blue", background="white",
-                                       font=btn_font, width=label_width)
-        self.btn_turn_left.pack(pady=padding)
+                                       font=btn_font, width=self.label_width)
+        self.btn_turn_left.pack(pady=self.padding)
         self.btn_turn_left.bind("<Button-1>", lambda event: self.turn_avatar_left())
 
         self.btn_make_maze = tk.Button(self.frm_button, text="Draw Scene", foreground="blue", background="white",
-                                       font=btn_font, width=label_width)
-        self.btn_make_maze.pack(pady=padding)
+                                       font=btn_font, width=self.label_width)
+        self.btn_make_maze.pack(pady=self.padding)
         self.btn_make_maze.bind("<Button-1>", lambda event: self.run_scene_generation())
 
         # could this be toggle button, disabled while running and reset pop when ready?
         self.btn_student = tk.Button(self.frm_button, text="Run Solution", foreground="blue", background="white",
-                                     font=btn_font, width=label_width)
-        self.btn_student.pack(pady=padding)
+                                     font=btn_font, width=self.label_width)
+        self.btn_student.pack(pady=self.padding)
         self.btn_student.bind("<Button-1>", lambda event: self.run_student_solution())
         label = tk.Label(self.frm_button, text="Created by Daniel Jacobs")
         label.pack()
@@ -119,18 +120,19 @@ class MainWorld(ABC):
         self.frm_button.pack()
 
         # Dialog Frame
-        self.frm_dialog = tk.Frame(master=self.frame_left, relief=tk.GROOVE, borderwidth=5, width=frame_width)
+        self.frm_dialog = tk.Frame(master=self.frame_left, relief=tk.GROOVE, borderwidth= self.border_width, width=self.frame_width)
 
         self.lbl_dialog = tk.Label(self.frm_dialog, text="Dialog", font=heading_font)
         self.lbl_dialog.pack()
-        self.msg_text = tk.Text(self.frm_dialog, height=4, width=label_width+2, font=btn_font)
+        self.msg_text = tk.Text(self.frm_dialog, height=4, width=self.label_width+2, font=btn_font)
         self.msg_text.delete('1.0', tk.END)
         self.msg_text.insert(tk.END, "Everything looks ok!\nKeep Going!\n\n")
         self.msg_text.pack()
         self.frm_dialog.pack()
 
         # Right Frame
-        self.frm_right = tk.Frame(master=self.__root, relief=tk.FLAT, borderwidth=10, padx=15, pady=15)
+        self.FRAME_RIGHT_PAD = 15
+        self.frm_right = tk.Frame(master=self.__root, relief=tk.FLAT, borderwidth= self.border_width*2, padx=self.FRAME_RIGHT_PAD, pady=self.FRAME_RIGHT_PAD)
         self.frm_right.bind("<Configure>", lambda event: self.resize_event(event))
         self.frm_right.pack(fill=tk.BOTH, expand=tk.TRUE)
 
@@ -146,10 +148,10 @@ class MainWorld(ABC):
         self.__sound_thread = None
         self.is_sound_running = False
 
-        self.congrats_sound = None
+        self.sound_player = None
         if sound_available:
             self.congrats_data = congrats_source.read_bytes()
-            self.sound_player = sa.WaveObject(self.congrats_data, 2, 2, 44100)
+            self.sound_wave = sa.WaveObject(self.congrats_data, 2, 2, 44100)
 
         self.do_goal_check = False
 
@@ -273,13 +275,14 @@ class MainWorld(ABC):
             self.btn_make_maze.config(state=tk.DISABLED)
 
     def run_sound_thread(self):
-        if sound_available and (not self.congrats_sound or not self.congrats_sound.is_playing()):
+        if sound_available and (not self.sound_player or not self.sound_player.is_playing()):
             self.__sound_thread = threading.Thread(target=self.play_goal_sound)
-            self.__sound_thread.daemon = True
+            self.__sound_thread.daemon = False
             self.__sound_thread.start()
 
     def play_goal_sound(self):
-        self.congrats_sound = self.sound_player.play()
+        #self.sound_player = self.sound_wave.play()
+        pass
 
     @staticmethod
     def __show_goal_dialog():
@@ -299,7 +302,7 @@ class MainWorld(ABC):
 
     def resize_event(self, event):
         frame_border_size = self.frm_right.cget("bd")
-        frame_padding_size = self.frm_right.cget("padx")
+        frame_padding_size = self.FRAME_RIGHT_PAD
         canvas_border_size = int(self.canvas.cget("bd")) + int(self.canvas.cget("highlightthickness"))
         new_canvas_width = event.width - 2 * canvas_border_size - 2 * frame_border_size - 2 * frame_padding_size
         new_canvas_height = event.height - 2 * canvas_border_size - 2 * frame_border_size - 2 * frame_padding_size

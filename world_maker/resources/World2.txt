@@ -1,6 +1,6 @@
 World 4 9
 Beepers 3 3 1
-Robot 3 1 2 0
+Robot 2 0 1 0
 Wall 4 1 1
 Wall 4 1 2
 Wall 4 3 1
