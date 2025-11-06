@@ -25,9 +25,9 @@ Inherited Functions
 # pip install importlib_resources
 
 # Imports
-from time import sleep
+import time
 from world_maker.world_builder import MainWorld
-
+from random import randint
 
 class StudentWorld(MainWorld):
     def __init__(self):
@@ -42,7 +42,8 @@ class StudentWorld(MainWorld):
 
         # This parameter sets the starting point for the random number generator.
         # We will use the same seed during the workshop so that we all start off solving the same maze.
-        seed = 1884
+        seed = randint(0,9999) #default 1884
+        print(seed)
 
         """
             Do not modify the super().__init__() command.
@@ -53,8 +54,8 @@ class StudentWorld(MainWorld):
         super().__init__(cell_size, creation_period, solution_period, seed)
 
         # Create a Maze of the selected size (max value 100)
-        number_of_rows = 3
-        number_of_cols = 3
+        number_of_rows = 50
+        number_of_cols = 50
         self.create_maze(number_of_rows, number_of_cols)
 
         # Create a Karel World from a Formatted Text File
@@ -62,16 +63,29 @@ class StudentWorld(MainWorld):
         # self.create_karel_world("World1.txt")
 
     def student_solution(self):
-        # Delete the pass statement and add your code here
         # To see your solution you can use the sleep command (i.e. sleep(1) to sleep 1 second)
         print("Starting Student Solution")
+        startTime = time.perf_counter()
+        run = True
+        while run:
+            if self.check_right_wall() == False:
+                self.turn_avatar_right()
+                self.move_avatar_forward()
+            elif self.check_front_wall() == False:
+                self.highlight_right_wall()
+                self.move_avatar_forward()
+            elif self.check_front_wall() == True:
+                self.highlight_right_wall()
+                self.turn_avatar_left()
+            #sleep(self.solution_period/1000.0)
+            if self.is_avatar_at_goal() == True:
+                run = False
+                endTime = time.perf_counter()
+                print(f'Time elapsed: {round(endTime - startTime,4)} seconds')
 
-        self.move_avatar_forward()
-        sleep(self.solution_period/1000.0)
-        self.turn_avatar_left()
-        sleep(self.solution_period/1000.0)
-        self.move_avatar_forward()
-
+    def turn_avatar_right(self):
+        for x in range(3):
+            self.turn_avatar_left()
 
     def keyboard_event(self, event):
         if not self.is_student_running:
@@ -79,7 +93,7 @@ class StudentWorld(MainWorld):
                 'Up': self.move_avatar_forward,
                 'Down': None,
                 'Left': self.turn_avatar_left,
-                'Right': None,
+                'Right': self.turn_avatar_right,
             }
             func = keyboard_switch.get(event.keysym, None)
             if func is not None:
