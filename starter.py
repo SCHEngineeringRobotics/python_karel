@@ -53,8 +53,8 @@ class StudentWorld(MainWorld):
         super().__init__(cell_size, creation_period, solution_period, seed)
 
         # Create a Maze of the selected size (max value 100)
-        number_of_rows = 3
-        number_of_cols = 3
+        number_of_rows = 10
+        number_of_cols = 10
         self.create_maze(number_of_rows, number_of_cols)
 
         # Create a Karel World from a Formatted Text File
@@ -66,12 +66,21 @@ class StudentWorld(MainWorld):
         # To see your solution you can use the sleep command (i.e. sleep(1) to sleep 1 second)
         print("Starting Student Solution")
 
-        self.move_avatar_forward()
-        sleep(self.solution_period/1000.0)
-        self.turn_avatar_left()
-        sleep(self.solution_period/1000.0)
-        self.move_avatar_forward()
+        while True:
+            #no right wall, turn right and move forward
+            if not self.check_right_wall():
+                self.turn_avatar_right()
+                step_pause()
+                self.move_avatar_forward()
+                step_pause()
 
+    #def highlight_right_wall(self):
+        #right_orientation
+
+    def turn_avatar_right(self):
+        self.turn_avatar_left()
+        self.turn_avatar_left()
+        self.turn_avatar_left()
 
     def keyboard_event(self, event):
         if not self.is_student_running:
@@ -79,7 +88,7 @@ class StudentWorld(MainWorld):
                 'Up': self.move_avatar_forward,
                 'Down': None,
                 'Left': self.turn_avatar_left,
-                'Right': None,
+                'Right': self.turn_avatar_right,
             }
             func = keyboard_switch.get(event.keysym, None)
             if func is not None:
