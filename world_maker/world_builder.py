@@ -347,6 +347,13 @@ class MainWorld(ABC):
         self.msg_text.delete('1.0', tk.END)
         self.msg_text.insert(tk.END, "Everything looks ok!\nKeep Going!\n\n")
 
+    def drop_beeper(self):
+        self.avatar.drop_beeper()
+        pass
+
+    def pick_beeper(self):
+        pass
+
     def check_front_wall(self):
         row, col = self.avatar.position
         current_cell = self.scene.scene_data[row][col]

@@ -22,6 +22,8 @@ from world_maker.scene_builder import Orientation
 
 class MazeAvatar:
     def __init__(self, canvas, row, col, cell_size, color):
+
+
         # Private
         self.__canvas = canvas
         self._row = row
@@ -32,6 +34,7 @@ class MazeAvatar:
         self.diameter = self.cell_size - 2 * self.padding_size
         self.__x = self.border_size + self._col * self.cell_size
         self.__y = self.border_size + self._row * self.cell_size
+
         # Private Graphics
         self.__circle_id = self.__canvas.create_oval(self.__x, self.__y,
                                                      self.__x + self.diameter, self.__y + self.diameter,
@@ -140,10 +143,23 @@ class MazeCell:
         self.__canvas = canvas
         self.row = row
         self.col = col
+        self.num_beepers = 0
         self.__update_cell_size(cell_size)
+
+
+        # Create Floor
         self.__floor_id = self.__canvas.create_rectangle(self.x + self.wall_size/2.0, self.y + self.wall_size/2.0,
                                                          self.x + self.wall_size/2.0 + self.floor_width, self.y + self.wall_size/2.0 + self.floor_width,
                                                          fill="white", outline="", width=0.0, tag="maze floor")
+
+        # Create Beeper
+        self.__beeper_id = self.__canvas.create_polygon(self.x, self.y+cell_size/2.0,
+                                                        self.x+cell_size/2.0, self.y,
+                                                        self.x+cell_size, self.y+cell_size/2.0,
+                                                        self.x+cell_size/2.0, self.y+cell_size, fill="", outline="")
+        self.__beeper_txt = self.__canvas.create_text(self.x+cell_size/2.0, self.y+cell_size/2.0, font=("Arial", int(self.cell_size/2), "bold"), text=str(self.num_beepers), fill="", justify="center")
+
+        # Create Walls
         self.__north_id = self.__canvas.create_line(self.x - self.wall_size/2.0, self.y,
                                                     self.x + self.cell_size + self.wall_size/2.0, self.y,
                                                     fill="black", width=self.wall_size, tag="maze wall")
@@ -193,6 +209,28 @@ class MazeCell:
 
     def is_floor_colored(self):
         return self.__canvas.itemcget(self.__floor_id, "fill") == ""
+
+    def set_beeper_active(self, is_active):
+        if is_active:
+            self.__beeper_id.itemconfig(self.__beeper_id, fill="blue")
+            self.__beeper_txt.itemconfig(self.__beeper_txt, fill="white")
+        else:
+            self.__beeper_id.itemconfig(self.__beeper_id, fill="")
+            self.__beeper_txt.itemconfig(self.__beeper_txt, fill="")
+
+    def get_num_beepers(self):
+        return self.num_beepers
+
+    def increment_beepers(self):
+        self.num_beepers += 1
+        self.set_beeper_active(True)
+        self.__beeper_txt.itemconfig(text=str(self.num_beepers))
+
+    def decrement_beepers(self):
+        self.num_beepers -= 1
+        self.__beeper_txt.itemconfig(text=str(self.num_beepers))
+        if self.num_beepers == 0:
+            self.set_beeper_active(False)
 
     def set_wall_color(self, wall_orientation, color):
         if isinstance(wall_orientation, Orientation):
@@ -251,14 +289,32 @@ class MazeCell:
 
     def update_graphics(self, cell_size):
         self.__update_cell_size(cell_size)
-        self.__canvas.itemconfig(self.__north_id, width=self.wall_size)
-        self.__canvas.itemconfig(self.__east_id, width=self.wall_size)
-        self.__canvas.itemconfig(self.__south_id, width=self.wall_size)
-        self.__canvas.itemconfig(self.__west_id, width=self.wall_size)
+
+        #Update Floor
         self.__canvas.coords(self.__floor_id, (
                              self.x + self.wall_size/2.0, self.y + self.wall_size/2.0,
                              self.x + self.wall_size/2.0 + self.floor_width,
                              self.y + self.wall_size/2.0 + self.floor_width))
+
+        # Update Beepers
+        self.__canvas.coords(self.__beeper_id, (
+            self.x, self.y+cell_size/2.0,
+            self.x+cell_size/2.0, self.y,
+            self.x+cell_size, self.y+cell_size/2.0,
+            self.x+cell_size/2.0, self.y+cell_size))
+
+        self.__canvas.coords(self.__beeper_txt, (
+            self.x+cell_size/2.0,
+            self.y+cell_size/2.0))
+
+        self.__canvas.itemconfig(self.__beeper_txt,  font=("Arial", int(self.cell_size/2), "bold"))
+
+        # Update Walls
+        self.__canvas.itemconfig(self.__north_id, width=self.wall_size)
+        self.__canvas.itemconfig(self.__east_id, width=self.wall_size)
+        self.__canvas.itemconfig(self.__south_id, width=self.wall_size)
+        self.__canvas.itemconfig(self.__west_id, width=self.wall_size)
+
         self.__canvas.coords(self.__north_id, (
                              self.x - self.wall_size/2.0, self.y,
                              self.x + self.cell_size + self.wall_size/2.0, self.y))
