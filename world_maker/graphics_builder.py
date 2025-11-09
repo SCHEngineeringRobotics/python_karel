@@ -8,7 +8,7 @@
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
 
-        http://www.apache.org/licenses/LICENSE-2.0
+        https://www.apache.org/licenses/LICENSE-2.0
 
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,7 @@ from world_maker.scene_builder import Orientation
 
 
 class MazeAvatar:
-    def __init__(self, canvas, row, col, cell_size, color):
+    def __init__(self, canvas, row, col, cell_size, color, beepers=0):
 
 
         # Private
@@ -34,6 +34,7 @@ class MazeAvatar:
         self.diameter = self.cell_size - 2 * self.padding_size
         self.__x = self.border_size + self._col * self.cell_size
         self.__y = self.border_size + self._row * self.cell_size
+        self.num_beepers = beepers
 
         # Private Graphics
         self.__circle_id = self.__canvas.create_oval(self.__x, self.__y,
@@ -212,23 +213,28 @@ class MazeCell:
 
     def set_beeper_active(self, is_active):
         if is_active:
-            self.__beeper_id.itemconfig(self.__beeper_id, fill="blue")
-            self.__beeper_txt.itemconfig(self.__beeper_txt, fill="white")
+            self.__canvas.itemconfig(self.__beeper_id, fill="blue")
+            self.__canvas.itemconfig(self.__beeper_txt, fill="white")
         else:
-            self.__beeper_id.itemconfig(self.__beeper_id, fill="")
-            self.__beeper_txt.itemconfig(self.__beeper_txt, fill="")
+            self.__canvas.itemconfig(self.__beeper_id, fill="")
+            self.__canvas.itemconfig(self.__beeper_txt, fill="")
 
     def get_num_beepers(self):
         return self.num_beepers
 
+    def set_num_beepers(self, beepers):
+        self.num_beepers = beepers
+        self.set_beeper_active(True)
+        self.__canvas.itemconfig(self.__beeper_txt, text=str(self.num_beepers))
+
     def increment_beepers(self):
         self.num_beepers += 1
         self.set_beeper_active(True)
-        self.__beeper_txt.itemconfig(text=str(self.num_beepers))
+        self.__canvas.itemconfig(self.__beeper_txt, text=str(self.num_beepers))
 
     def decrement_beepers(self):
         self.num_beepers -= 1
-        self.__beeper_txt.itemconfig(text=str(self.num_beepers))
+        self.__canvas.itemconfig(self.__beeper_txt, text=str(self.num_beepers))
         if self.num_beepers == 0:
             self.set_beeper_active(False)
 

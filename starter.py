@@ -53,13 +53,15 @@ class StudentWorld(MainWorld):
         super().__init__(cell_size, creation_period, solution_period, seed)
 
         # Create a Maze of the selected size (max value 100)
-        number_of_rows = 3
-        number_of_cols = 3
-        self.create_maze(number_of_rows, number_of_cols)
+        number_of_rows = 10
+        number_of_cols = 10
+        # self.create_maze(number_of_rows, number_of_cols)
 
         # Create a Karel World from a Formatted Text File
-        # Three starter worlds are in the package (i.e. "World1.txt", "World2.txt", and "World3.txt"
-        # self.create_karel_world("World1.txt")
+        # Three stater worlds (Fill the Pothole) are in the package (i.e. "World1.txt", "World2.txt", and "World3.txt")
+        self.create_karel_world("World4.txt")
+
+        # One starter world (Light Post) are in the package (i.e. "World4.txt")
 
     def student_solution(self):
         # Delete the pass statement and add your code here
@@ -71,6 +73,7 @@ class StudentWorld(MainWorld):
         self.turn_avatar_left()
         sleep(self.solution_period/1000.0)
         self.move_avatar_forward()
+        self.put_beeper()
 
 
     def keyboard_event(self, event):

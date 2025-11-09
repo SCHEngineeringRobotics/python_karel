@@ -1,0 +1,38 @@
+World 6 10
+Robot 5 0 1 0
+Beepers 5 0 1
+Beepers 5 1 2
+Beepers 5 3 1
+Beepers 5 4 1
+Beepers 5 5 2
+Beepers 5 6 2
+Beepers 5 8 1
+Beepers 5 9 1
+Wall 3 1 1
+Wall 4 1 1
+Wall 5 1 1
+Wall 4 4 1
+Wall 5 4 1
+Wall 3 5 1
+Wall 4 5 1
+Wall 5 5 1
+Wall 1 8 1
+Wall 2 8 1
+Wall 3 8 1
+Wall 4 8 1
+Wall 5 8 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

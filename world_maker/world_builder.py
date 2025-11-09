@@ -8,7 +8,7 @@
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
 
-        http://www.apache.org/licenses/LICENSE-2.0
+        https://www.apache.org/licenses/LICENSE-2.0
 
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
@@ -87,6 +87,8 @@ class MainWorld(ABC):
         self.lbl_orientation.pack()
         self.lbl_position = tk.Label(self.frm_status, text="Position : (0 , 0)", width=self.label_width, font=btn_font)
         self.lbl_position.pack()
+        self.lbl_beepers_held = tk.Label(self.frm_status, text="# Beepers : 0", width=self.label_width, font=btn_font)
+        self.lbl_beepers_held.pack()
         self.frm_status.pack()
 
         # Button Frame
@@ -104,6 +106,16 @@ class MainWorld(ABC):
         self.btn_turn_left.pack(pady=self.padding)
         self.btn_turn_left.bind("<Button-1>", lambda event: self.turn_avatar_left())
 
+        self.btn_put_beeper = tk.Button(self.frm_button, text="Put Beeper", foreground="blue", background="white",
+                                          font=btn_font, width=self.label_width)
+        self.btn_put_beeper.pack(pady=self.padding)
+        self.btn_put_beeper.bind("<Button-1>", lambda event: self.put_beeper())
+
+        self.btn_pick_beeper = tk.Button(self.frm_button, text="Pick Beeper", foreground="blue", background="white",
+                                       font=btn_font, width=self.label_width)
+        self.btn_pick_beeper.pack(pady=self.padding)
+        self.btn_pick_beeper.bind("<Button-1>", lambda event: self.pick_beeper())
+
         self.btn_make_maze = tk.Button(self.frm_button, text="Draw Scene", foreground="blue", background="white",
                                        font=btn_font, width=self.label_width)
         self.btn_make_maze.pack(pady=self.padding)
@@ -114,7 +126,7 @@ class MainWorld(ABC):
                                      font=btn_font, width=self.label_width)
         self.btn_student.pack(pady=self.padding)
         self.btn_student.bind("<Button-1>", lambda event: self.run_student_solution())
-        label = tk.Label(self.frm_button, text="Created by Daniel Jacobs")
+        label = tk.Label(self.frm_button, text="Created by Daniel Jacobs\n Copyright 2020-2025")
         label.pack()
 
         self.frm_button.pack()
@@ -234,6 +246,10 @@ class MainWorld(ABC):
         self.scene.build_scene()
         self.run_scene_generation()
 
+        # Update Gui
+        self.lbl_position.config(text="Position : (%i , %i)" % (self.avatar.position[1],self.avatar.position[0]))
+        self.lbl_beepers_held.config(text="# Beepers : %i" % self.avatar.num_beepers)
+
         # Set Attributes
         self.number_of_rows = self.scene.number_of_rows
         self.number_of_cols = self.scene.number_of_cols
@@ -335,7 +351,7 @@ class MainWorld(ABC):
             self.msg_text.insert(tk.END, "You ran into a wall!\n\n")
             self.action_failed = True
 
-        self.lbl_position.config(text="Position : (%i , %i)" % self.avatar.position)
+        self.lbl_position.config(text="Position : (%i , %i)" % (self.avatar.position[1],self.avatar.position[0]))
         if self.is_avatar_at_goal() and self.do_goal_check and move_succeeded:
             self.__root.after(10, self.run_sound_thread)
             self.__root.after(10, self.__show_goal_dialog)
@@ -347,12 +363,21 @@ class MainWorld(ABC):
         self.msg_text.delete('1.0', tk.END)
         self.msg_text.insert(tk.END, "Everything looks ok!\nKeep Going!\n\n")
 
-    def drop_beeper(self):
-        self.avatar.drop_beeper()
-        pass
+    def put_beeper(self):
+        if self.avatar.num_beepers > 0:
+            self.avatar.num_beepers -= 1
+            row, col = self.avatar.position
+            current_cell = self.scene.scene_graphics[row][col]
+            current_cell.increment_beepers()
+            self.lbl_beepers_held.config(text="# Beepers : %i" % self.avatar.num_beepers)
 
     def pick_beeper(self):
-        pass
+        row, col = self.avatar.position
+        current_cell = self.scene.scene_graphics[row][col]
+        if current_cell.num_beepers > 0:
+            current_cell.decrement_beepers()
+            self.avatar.num_beepers += 1
+            self.lbl_beepers_held.config(text="# Beepers : %i" % self.avatar.num_beepers)
 
     def check_front_wall(self):
         row, col = self.avatar.position

@@ -8,7 +8,7 @@
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
 
-        http://www.apache.org/licenses/LICENSE-2.0
+        https://www.apache.org/licenses/LICENSE-2.0
 
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,6 @@ class SceneBuilder(ABC):
         self.number_of_rows = max(1, min(number_of_rows, 100))
         self.number_of_cols = max(1, min(number_of_cols, 100))
 
-        self.scene_graphics = []
         self.cell_size = cell_size
         self.creation_period = creation_period
         self.is_rendered = False
@@ -43,13 +42,17 @@ class SceneBuilder(ABC):
         self._canvas = canvas
         self._avatar = avatar
 
+        #Initialize
+        self.scene_data = []
+        self.scene_graphics = [[graphics.MazeCell(self._canvas, row, col, self.cell_size) for col in range(self.number_of_cols)] for row in range(self.number_of_rows)]
+
     @abstractmethod
     def build_scene(self):
         pass
 
     def render(self):
         # Initialize
-        self.scene_graphics = [[graphics.MazeCell(self._canvas, row, col, self.cell_size) for col in range(self.number_of_cols)] for row in range(self.number_of_rows)]
+
         self._avatar.bring_to_top()
         time.sleep(min(1, self.creation_period / 100.0))
 
@@ -75,7 +78,7 @@ class MazeBuilder(SceneBuilder):
     def __init__(self, canvas, avatar, number_of_rows, number_of_cols, cell_size, creation_period):
         super().__init__(canvas, avatar, number_of_rows, number_of_cols, cell_size, creation_period)
 
-        self.scene_data = []
+
         for row in range(0, self.number_of_rows):
             row_array = []
             for col in range(0, self.number_of_cols):
@@ -184,22 +187,30 @@ class KarelSceneBuilder(SceneBuilder):
             starting_beepers = int(tokens[4])
             avatar.set_position(starting_row, starting_col)
             avatar.orientation = Orientation(starting_orientation_enum)
-            avatar.beepers = starting_beepers
+            avatar.num_beepers = starting_beepers
 
         else:
             ValueError("The Karel World File Must have a Single Row with Robot StartRow StartCol OrientationNum "
                        "NumBeepers")
 
         # Parse Beepers
-        # beeper_item = [line for line in file_lines if 'Robot' in line and '#' not in line]
+        for beeper_line in file_lines:
+            if 'Beeper' in beeper_line and '#' not in beeper_line:
+                tokens = beeper_line.split()
+                row = int(tokens[1])
+                col = int(tokens[2])
+                num_beepers = int(tokens[3])
+                current_cell = self.scene_graphics[row][col]
+                current_cell.set_num_beepers(num_beepers)
+
 
         # Parse Walls
         for wall_line in file_lines:
             if 'Wall' in wall_line and '#' not in wall_line:
                 tokens = wall_line.split()
-                row = int(tokens[1])-1
-                col = int(tokens[2])-1
-                wall_enum = int(tokens[3])-1
+                row = int(tokens[1])
+                col = int(tokens[2])
+                wall_enum = int(tokens[3])
                 current_scene_cell = self.scene_data[row][col]
                 orientation = Orientation(wall_enum)
                 current_scene_cell.set_wall_active(Orientation(wall_enum), True)

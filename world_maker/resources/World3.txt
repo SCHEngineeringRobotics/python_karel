@@ -1,13 +1,13 @@
 World 4 9
-Beepers 3 3 1
-Robot 2 0 1 0
-Wall 4 1 1
-Wall 4 1 2
-Wall 4 2 2
-Wall 4 3 2
-Wall 4 4 1
-Wall 4 5 1
-Wall 4 5 2
-Wall 4 8 1
-Wall 4 8 2
-Wall 4 8 4
+Beepers 2 1 1
+Robot 2 0 1 5
+Wall 3 0 0
+Wall 3 0 1
+Wall 3 1 1
+Wall 3 2 1
+Wall 3 3 0
+Wall 3 4 0
+Wall 3 4 1
+Wall 3 7 0
+Wall 3 7 1
+Wall 3 7 3
