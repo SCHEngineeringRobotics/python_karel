@@ -53,8 +53,8 @@ class StudentWorld(MainWorld):
         super().__init__(cell_size, creation_period, solution_period, seed)
 
         # Create a Maze of the selected size (max value 100)
-        number_of_rows = 50
-        number_of_cols = 50
+        number_of_rows = 25
+        number_of_cols = 25
         self.create_maze(number_of_rows, number_of_cols)
 
         # Create a Karel World from a Formatted Text File
@@ -71,19 +71,16 @@ class StudentWorld(MainWorld):
             # no wall on right, turn right,  move forward
             if not self.check_right_wall():
                 self.turn_avatar_right()
-                #sleep(self.solution_period/1000.0)
                 self.move_avatar_forward()
-                #sleep(self.solution_period/1000.0)
 
             # no wall in front,  move forward
             elif not self.check_front_wall():
                 self.move_avatar_forward()
-                #sleep(self.solution_period/1000.0)
 
             # wall in front, turn left until there’s no wall
             else:
                 self.turn_avatar_left()
-                #sleep(self.solution_period/1000.0)
+
 
     def highlight_right_wall(self):
         if self.check_right_wall():
