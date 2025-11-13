@@ -65,11 +65,14 @@ class StudentWorld(MainWorld):
         # Delete the pass statement and add your code here
         # To see your solution you can use the sleep command (i.e. sleep(1) to sleep 1 second)
         print("Starting Student Solution")
-        #right wall solution
+        #---------------------------------------------------
+        #start left wall solution
         while True:
-            self.highlight_right_wall()
-            # no wall on right, turn right,  move forward
-            if not self.check_right_wall():
+            self.highlight_left_wall()
+            # no wall on left, turn left,  move forward
+            if not self.check_left_wall():
+                self.turn_avatar_right()
+                self.turn_avatar_right()
                 self.turn_avatar_right()
                 self.move_avatar_forward()
 
@@ -79,12 +82,38 @@ class StudentWorld(MainWorld):
 
             # wall in front, turn left until there’s no wall
             else:
-                self.turn_avatar_left()
+                self.turn_avatar_right()
+        # end left wall solution
+        #---------------------------------------------------
+        #start right wall solution
+        #while True:
+            #self.highlight_right_wall()
+            # no wall on right, turn right,  move forward
+            #if not self.check_right_wall():
+                #self.turn_avatar_right()
+                #self.move_avatar_forward()
 
+            # no wall in front,  move forward
+            #elif not self.check_front_wall():
+                #self.move_avatar_forward()
+
+            # wall in front, turn left until there’s no wall
+            #else:
+                #self.turn_avatar_left()
+        #end right wall solution
+        #--------------------------------------------------------
 
     def highlight_right_wall(self):
         if self.check_right_wall():
             super().highlight_right_wall()
+
+    def highlight_left_wall(self):
+        self.turn_avatar_left()
+        self.turn_avatar_left()
+        super().highlight_right_wall()
+        self.turn_avatar_right()
+        self.turn_avatar_right()
+
 
     def turn_avatar_right(self):
         self.turn_avatar_left()
