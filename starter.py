@@ -11,18 +11,20 @@ Inherited Attributes
 Inherited Functions
     self.move_avatar_forward()
     self.turn_avatar_left()
-    
+
+    self.put_beeper()
+    self.pick_beeper()
+
     self.check_front_wall()
     self.check_right_wall()
     self.check_left_wall()
     
     self.highlight_right_wall()
-    self.paint_the_ground(color), where color can be string (e.g. "blue) or hex code (e.g. #9D2235)
+    self.paint_the_ground(color), where color can be string (e.g. "blue") or hex code (e.g. #9D2235)
 """
 
 # Students will need to click on terminal and type the following command
-# pip install simpleaudio
-# pip install importlib_resources
+# pip install pygame
 
 # Imports
 from time import sleep
@@ -55,19 +57,16 @@ class StudentWorld(MainWorld):
         # Create a Maze of the selected size (max value 100)
         number_of_rows = 10
         number_of_cols = 10
-        # self.create_maze(number_of_rows, number_of_cols)
+        self.create_maze(number_of_rows, number_of_cols)
 
         # Create a Karel World from a Formatted Text File
         # Three stater worlds (Fill the Pothole) are in the package (i.e. "World1.txt", "World2.txt", and "World3.txt")
-        self.create_karel_world("World4.txt")
-
-        # One starter world (Light Post) are in the package (i.e. "World4.txt")
+        # One starter world (Light Up Post) are in the package (i.e. "World4.txt")
+        # self.create_karel_world("World4.txt")
 
     def student_solution(self):
-        # Delete the pass statement and add your code here
-        # To see your solution you can use the sleep command (i.e. sleep(1) to sleep 1 second)
+        # Sdd your code here
         print("Starting Student Solution")
-
         self.move_avatar_forward()
         sleep(self.solution_period/1000.0)
         self.turn_avatar_left()

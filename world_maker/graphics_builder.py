@@ -2,7 +2,7 @@
     This module is for creating the avatar and other visualization elements
     for a tkinter Canvas object
 
-    Copyright [2020] [Daniel A. Jacobs]
+    Copyright [2020-2026] [Daniel A. Jacobs]
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

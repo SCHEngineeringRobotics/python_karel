@@ -2,7 +2,7 @@
    This class builds the main world and provides the interface for the student
    world class to implement and visualize a solution.
 
-    Copyright [2020] [Daniel A. Jacobs]
+    Copyright [2020-2026] [Daniel A. Jacobs]
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -27,29 +27,18 @@ import time  # Time and Sleep Control
 
 from abc import ABC, abstractmethod  # Import Abstract Base Class
 import random  # Random Number Generator
-from importlib_resources import files
 import os  # Operating System to Check for File
 
+# Sound Player
+import pygame
+
 # File management
-import importlib_resources
+import importlib.resources
 import world_maker.resources
 
 # My Packages
 from world_maker import graphics_builder as graphics
 from world_maker import scene_builder as scene
-
-# Test Import Sound
-sound_available = False
-try:
-    import simpleaudio as sa
-
-    congrats_source = importlib_resources.files(world_maker.resources).joinpath("congrats.wav")
-    if congrats_source.is_file():
-        sound_available = True
-    else:
-        print("World Maker Audio File: Congrats.wav could not be found")
-finally:
-    pass
 
 class MainWorld(ABC):
 
@@ -126,7 +115,7 @@ class MainWorld(ABC):
                                      font=btn_font, width=self.label_width)
         self.btn_student.pack(pady=self.padding)
         self.btn_student.bind("<Button-1>", lambda event: self.run_student_solution())
-        label = tk.Label(self.frm_button, text="Created by Daniel Jacobs\n Copyright 2020-2025")
+        label = tk.Label(self.frm_button, text="Created by Daniel Jacobs\n Copyright 2020-2026")
         label.pack()
 
         self.frm_button.pack()
@@ -160,15 +149,25 @@ class MainWorld(ABC):
         self.__sound_thread = None
         self.is_sound_running = False
 
+        #Setup Sound Player
+        self.sound_available = False
         self.sound_player = None
-        if sound_available:
-            self.congrats_data = congrats_source.read_bytes()
-            self.sound_wave = sa.WaveObject(self.congrats_data, 2, 2, 44100)
+        try:
+            pygame.mixer.init()
+
+            congrats_source = importlib.resources.files("world_maker.resources").joinpath("congrats.wav")
+            if congrats_source.is_file():
+                self.sound_available = True
+                self.sound_player = pygame.mixer.Sound(str(congrats_source))
+            else:
+                print("World Maker Audio File: Congrats.wav could not be found")
+        finally:
+            pass
+
 
         self.do_goal_check = False
 
         # Initialize
-        # Inefficient but hides complexity of super.__init__ from first timers
         self.number_of_rows = 0
         self.number_of_cols = 0
 
@@ -225,7 +224,7 @@ class MainWorld(ABC):
 
     def create_karel_world(self, world_filename):
         # Check for World Template
-        world_source = importlib_resources.files(world_maker.resources).joinpath(world_filename)
+        world_source = importlib.resources.files("world_maker.resources").joinpath(world_filename)
         if world_source.is_file():
             world_text = world_source.read_text()
         elif os.path.isfile(world_filename):
@@ -291,14 +290,13 @@ class MainWorld(ABC):
             self.btn_make_maze.config(state=tk.DISABLED)
 
     def run_sound_thread(self):
-        if sound_available and (not self.sound_player or not self.sound_player.is_playing()):
+        if self.sound_available and (not self.sound_player or not pygame.mixer.get_busy()):
             self.__sound_thread = threading.Thread(target=self.play_goal_sound)
             self.__sound_thread.daemon = False
             self.__sound_thread.start()
 
     def play_goal_sound(self):
-        #self.sound_player = self.sound_wave.play()
-        pass
+        self.sound_player.play()
 
     @staticmethod
     def __show_goal_dialog():
