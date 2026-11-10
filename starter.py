@@ -57,36 +57,65 @@ class StudentWorld(MainWorld):
         # Create a Maze of the selected size (max value 100)
         number_of_rows = 10
         number_of_cols = 10
-        self.create_maze(number_of_rows, number_of_cols)
+        # self.create_maze(number_of_rows, number_of_cols)
 
         # Create a Karel World from a Formatted Text File
         # Three stater worlds (Fill the Pothole) are in the package (i.e. "World1.txt", "World2.txt", and "World3.txt")
         # One starter world (Light Up Post) are in the package (i.e. "World4.txt")
-        # self.create_karel_world("World4.txt")
+        self.create_karel_world("World1.txt")
 
     def student_solution(self):
-        # Sdd your code here
-        print("Starting Student Solution")
-        self.move_avatar_forward()
-        sleep(self.solution_period/1000.0)
-        self.turn_avatar_left()
-        sleep(self.solution_period/1000.0)
-        self.move_avatar_forward()
-        self.put_beeper()
+
+        # Goal 1: Karel Pothole Algorithm
+
+        # Loop while there is no wall in front of Karel to keep moving
+        while not self.check_front_wall():
+
+            # Check wall on the right
+            # If the right is no wall on the right, there is a pothole
+            if not self.check_front_wall():
+                # False (no wall), go into the pothole and fill
+                # Turn right and move down into the hole
+                self.turn_avatar_left()
+                self.turn_avatar_left()
+                self.turn_avatar_left()
+                self.move_avatar_forward()
+
+                # Fill the pothole with a beeper
+                self.put_beeper()
+
+                # Turn around to go back up
+                self.turn_avatar_left()
+                self.turn_avatar_left()
+                self.move_avatar_forward()
+
+                # Turn right (three left turns) to face East again
+                self.turn_avatar_left()
+                self.turn_avatar_left()
+                self.turn_avatar_left()
+
+            # Move forward to the next spot
+                self.move_avatar_forward()
+
+        # After reaching the end, check the last spot and put a beeper if empty
+        if not self.beeper_present():
+            self.put_beeper()
+
+    
 
 
     def keyboard_event(self, event):
         if not self.is_student_running:
-            keyboard_switch = {
-                'Up': self.move_avatar_forward,
-                'Down': None,
-                'Left': self.turn_avatar_left,
-                'Right': None,
-            }
-            func = keyboard_switch.get(event.keysym, None)
-            if func is not None:
-                func()
+                keyboard_switch = {
+                    'Up': self.move_avatar_forward,
+                    'Down': None,
+                    'Left': self.turn_avatar_left,
+                    'Right': None,
+                }
+                func = keyboard_switch.get(event.keysym, None)
+                if func is not None:
+                    func()
 
 if __name__ == "__main__":
-    # execute only if run as a script
+# execute only if run as a script
     StudentWorld()
