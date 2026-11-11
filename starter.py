@@ -22,7 +22,7 @@ Inherited Functions
     self.highlight_right_wall()
     self.paint_the_ground(color), where color can be string (e.g. "blue") or hex code (e.g. #9D2235)
 """
-
+from encodings import search_function
 # Students will need to click on terminal and type the following command
 # pip install pygame
 
@@ -62,49 +62,64 @@ class StudentWorld(MainWorld):
         # Create a Karel World from a Formatted Text File
         # Three stater worlds (Fill the Pothole) are in the package (i.e. "World1.txt", "World2.txt", and "World3.txt")
         # One starter world (Light Up Post) are in the package (i.e. "World4.txt")
-        self.create_karel_world("World1.txt")
+        self.create_karel_world("World4.txt")
 
-    def student_solution(self):
+    # def student_solution(self):
+    #
+    #     # Goal 1: Karel Pothole Algorithm
+    #     self.move_avatar_forward()
+    #
+    #     # Loop while there is no wall in front of Karel to keep moving
+    #     while not self.check_front_wall():
+    #
+    #         # Check wall on the right
+    #         # If the right is no wall on the right, there is a pothole
+    #         if not self.check_right_wall():
+    #             # False (no wall), go into the pothole and fill
+    #             # Turn right and move down into the hole
+    #             self.turn_avatar_left()
+    #             self.turn_avatar_left()
+    #             self.turn_avatar_left()
+    #
+    #             # Fill the pothole with a beeper
+    #             self.move_avatar_forward()
+    #             self.put_beeper()
+    #
+    #             # Turn around to go back up
+    #             self.turn_avatar_left()
+    #             self.turn_avatar_left()
+    #             self.move_avatar_forward()
+    #
+    #             # Turn right (three left turns) to face East again
+    #             self.turn_avatar_left()
+    #             self.turn_avatar_left()
+    #             self.turn_avatar_left()
+    #
+    #         # Move forward to the next spot
+    #         self.move_avatar_forward()
+    # # If we reach the end of the straight road, done with Goal 1
+    #     return # Exit the function
 
-        # Goal 1: Karel Pothole Algorithm
-
-        # Loop while there is no wall in front of Karel to keep moving
-        while not self.check_front_wall():
-
-            # Check wall on the right
-            # If the right is no wall on the right, there is a pothole
+def student_solution(self):
+        # Goal 2: Right Hand Rule
+        while True:
             if not self.check_front_wall():
-                # False (no wall), go into the pothole and fill
-                # Turn right and move down into the hole
-                self.turn_avatar_left()
-                self.turn_avatar_left()
-                self.turn_avatar_left()
                 self.move_avatar_forward()
-
-                # Fill the pothole with a beeper
                 self.put_beeper()
-
-                # Turn around to go back up
-                self.turn_avatar_left()
-                self.turn_avatar_left()
-                self.move_avatar_forward()
-
-                # Turn right (three left turns) to face East again
+            else:
                 self.turn_avatar_left()
                 self.turn_avatar_left()
                 self.turn_avatar_left()
+                if not self.check_front_wall():
+                    self.move_avatar_forward()
+                    self.put_beeper()
+                    self.turn_avatar_left()
+                    self.turn_avatar_left()
+                    self.turn_avatar_left()
+                else:
+                    self.turn_avatar_left()
 
-            # Move forward to the next spot
-                self.move_avatar_forward()
-
-        # After reaching the end, check the last spot and put a beeper if empty
-        if not self.beeper_present():
-            self.put_beeper()
-
-    
-
-
-    def keyboard_event(self, event):
+def keyboard_event(self, event):
         if not self.is_student_running:
                 keyboard_switch = {
                     'Up': self.move_avatar_forward,
@@ -117,5 +132,6 @@ class StudentWorld(MainWorld):
                     func()
 
 if __name__ == "__main__":
-# execute only if run as a script
-    StudentWorld()
+    # execute only if run as a script
+    StudentWorld
+
