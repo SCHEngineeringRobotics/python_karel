@@ -100,26 +100,38 @@ class StudentWorld(MainWorld):
     # # If we reach the end of the straight road, done with Goal 1
     #     return # Exit the function
 
-def student_solution(self):
-        # Goal 2: Right Hand Rule
+    def student_solution(self):
         while True:
-            if not self.check_front_wall():
+
+            while not self.check_front_wall():
                 self.move_avatar_forward()
                 self.put_beeper()
-            else:
-                self.turn_avatar_left()
-                self.turn_avatar_left()
-                self.turn_avatar_left()
-                if not self.check_front_wall():
-                    self.move_avatar_forward()
-                    self.put_beeper()
-                    self.turn_avatar_left()
-                    self.turn_avatar_left()
-                    self.turn_avatar_left()
-                else:
-                    self.turn_avatar_left()
 
-def keyboard_event(self, event):
+            self.turn_avatar_left()
+            self.turn_avatar_left()
+            self.turn_avatar_left()
+            self.move_avatar_forward()
+            self.put_beeper()
+
+            while not self.check_front_wall():
+                self.move_avatar_forward()
+                self.put_beeper()
+
+            self.turn_avatar_left()
+            self.turn_avatar_left()
+            self.turn_avatar_left()
+
+            if self.check_front_wall():
+                break
+            self.move_avatar_forward()
+            self.move_avatar_forward()
+            self.move_avatar_forward()
+            self.turn_avatar_left()
+
+
+
+
+    def keyboard_event(self, event):
         if not self.is_student_running:
                 keyboard_switch = {
                     'Up': self.move_avatar_forward,
@@ -133,5 +145,5 @@ def keyboard_event(self, event):
 
 if __name__ == "__main__":
     # execute only if run as a script
-    StudentWorld
+    StudentWorld()
 
