@@ -40,7 +40,7 @@ class StudentWorld(MainWorld):
         creation_period = 0 # time in milliseconds
 
         # This parameter changes the speed at which your personal solution will solve the maze
-        solution_period = 40 # time in milliseconds
+        solution_period = 200 # time in milliseconds
 
         # This parameter sets the starting point for the random number generator.
         # We will use the same seed during the workshop so that we all start off solving the same maze.
@@ -62,83 +62,124 @@ class StudentWorld(MainWorld):
         # Create a Karel World from a Formatted Text File
         # Three stater worlds (Fill the Pothole) are in the package (i.e. "World1.txt", "World2.txt", and "World3.txt")
         # One starter world (Light Up Post) are in the package (i.e. "World4.txt")
-        self.create_karel_world("World4.txt")
+        self.create_karel_world("World3.txt")
+
+
+    def turn_right(self):
+        self.turn_avatar_left()
+        sleep(self.solution_period / 1000)
+        self.turn_avatar_left()
+        sleep(self.solution_period / 1000)
+        self.turn_avatar_left()
+        sleep(self.solution_period / 1000)
+
+    def student_solution(self):
+        # Goal 1: Karel Pothole Algorithm
+
+        # Move forward one step first
+        self.move_avatar_forward()
+        sleep(self.solution_period / 1000)
+
+        # Pick up the beeper at this new location
+        self.pick_beeper()
+        sleep(self.solution_period / 1000)
+
+        # Check if there is a pothole below
+        if not self.check_right_wall():
+            # Turn right to face the pothole
+            self.turn_right()
+            sleep(self.solution_period / 1000)
+            # Move down into the pothole
+            self.move_avatar_forward()
+            sleep(self.solution_period / 1000)
+            # Fill the pothole with a beeper
+            self.put_beeper()
+            sleep(self.solution_period / 1000)
+
+        # Climb out and turn around then go back up
+            self.turn_avatar_left()
+            sleep(self.solution_period / 1000)
+            self.turn_avatar_left()
+            sleep(self.solution_period / 1000)
+            self.move_avatar_forward()
+            sleep(self.solution_period / 1000)
+
+        # Use the turn_right function to face East again
+            self.turn_right()
+            sleep(self.solution_period / 1000)
+
+        # Now, continue the normal loop for the rest of the map
+        while not self.check_front_wall():
+            self.move_avatar_forward()
+            sleep(self.solution_period / 1000)
+
+            # Pick up beeper if present
+            self.pick_beeper()
+            sleep(self.solution_period / 1000)
+
+            # Check for pothole on the right, if no wall, go down to fill it
+            if not self.check_right_wall():
+                sleep(self.solution_period / 1000)
+                self.turn_right()
+                sleep(self.solution_period / 1000)
+                self.move_avatar_forward()
+                sleep(self.solution_period / 1000)
+                self.put_beeper()
+                sleep(self.solution_period / 1000)
+
+                # Come back up and face right again
+                self.turn_avatar_left()
+                sleep(self.solution_period / 1000)
+                self.turn_avatar_left()
+                sleep(self.solution_period / 1000)
+                self.move_avatar_forward()
+                sleep(self.solution_period / 1000)
+                self.turn_right()
+                sleep(self.solution_period / 1000)
+
+
+
+
 
     # def student_solution(self):
+    #     # Goal 2: implementation of the Right Hand Rule for Maze Solving with decorated lamp posts
+    #     while True:
+    #     # Move all the way up
+    #     # Keep moving forward (Up) until hitting a wall, dropping beepers along the way
+    #         while not self.check_front_wall():
+    #             self.move_avatar_forward()
+    #             self.put_beeper()
+    #     # Cross over to the right side
+    #     # Turn right (3 left turns) to face East
+    #         self.turn_avatar_left()
+    #         self.turn_avatar_left()
+    #         self.turn_avatar_left()
+    #     # Move one step across the post and drop a beeper
+    #         self.move_avatar_forward()
+    #         self.put_beeper()
     #
-    #     # Goal 1: Karel Pothole Algorithm
-    #     self.move_avatar_forward()
-    #
-    #     # Loop while there is no wall in front of Karel to keep moving
-    #     while not self.check_front_wall():
-    #
-    #         # Check wall on the right
-    #         # If the right is no wall on the right, there is a pothole
-    #         if not self.check_right_wall():
-    #             # False (no wall), go into the pothole and fill
-    #             # Turn right and move down into the hole
-    #             self.turn_avatar_left()
-    #             self.turn_avatar_left()
-    #             self.turn_avatar_left()
-    #
-    #             # Fill the pothole with a beeper
+    #         # Keep moving forward (Down) until hitting the bottom, dropping beepers
+    #         while not self.check_front_wall():
     #             self.move_avatar_forward()
     #             self.put_beeper()
     #
-    #             # Turn around to go back up
-    #             self.turn_avatar_left()
-    #             self.turn_avatar_left()
-    #             self.move_avatar_forward()
+    #         # Check for the end and prepare for next post
+    #         # Turn right (3 left turns) to face East again
+    #         self.turn_avatar_left()
+    #         self.turn_avatar_left()
+    #         self.turn_avatar_left()
     #
-    #             # Turn right (three left turns) to face East again
-    #             self.turn_avatar_left()
-    #             self.turn_avatar_left()
-    #             self.turn_avatar_left()
+    #         # Stop condition: If the front is blocked after landing, it reached the end
+    #         if self.check_front_wall():
+    #             break # Exit the infinite loop
     #
-    #         # Move forward to the next spot
+    #         # If not the end, move forward 3 steps to reach the next column
     #         self.move_avatar_forward()
-    # # If we reach the end of the straight road, done with Goal 1
-    #     return # Exit the function
-
-    def student_solution(self):
-        # Goal 2: implementation of the Right Hand Rule for Maze Solving with decorated lamp posts
-        while True:
-        # Move all the way up
-        # Keep moving forward (Up) until hitting a wall, dropping beepers along the way
-            while not self.check_front_wall():
-                self.move_avatar_forward()
-                self.put_beeper()
-        # Cross over to the right side
-        # Turn right (3 left turns) to face East
-            self.turn_avatar_left()
-            self.turn_avatar_left()
-            self.turn_avatar_left()
-        # Move one step across the post and drop a beeper
-            self.move_avatar_forward()
-            self.put_beeper()
-
-            # Keep moving forward (Down) until hitting the bottom, dropping beepers
-            while not self.check_front_wall():
-                self.move_avatar_forward()
-                self.put_beeper()
-
-            # Check for the end and prepare for next post
-            # Turn right (3 left turns) to face East again
-            self.turn_avatar_left()
-            self.turn_avatar_left()
-            self.turn_avatar_left()
-
-            # Stop condition: If the front is blocked after landing, it reached the end
-            if self.check_front_wall():
-                break # Exit the infinite loop
-
-            # If not the end, move forward 3 steps to reach the next column
-            self.move_avatar_forward()
-            self.move_avatar_forward()
-            self.move_avatar_forward()
-
-            # Turn left to face North (Up) and start the next loop
-            self.turn_avatar_left()
+    #         self.move_avatar_forward()
+    #         self.move_avatar_forward()
+    #
+    #         # Turn left to face North (Up) and start the next loop
+    #         self.turn_avatar_left()
 
 
 
