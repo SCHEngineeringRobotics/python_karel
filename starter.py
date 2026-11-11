@@ -101,31 +101,43 @@ class StudentWorld(MainWorld):
     #     return # Exit the function
 
     def student_solution(self):
+        # Goal 2: implementation of the Right Hand Rule for Maze Solving with decorated lamp posts
         while True:
-
+        # Move all the way up
+        # Keep moving forward (Up) until hitting a wall, dropping beepers along the way
             while not self.check_front_wall():
                 self.move_avatar_forward()
                 self.put_beeper()
-
+        # Cross over to the right side
+        # Turn right (3 left turns) to face East
             self.turn_avatar_left()
             self.turn_avatar_left()
             self.turn_avatar_left()
+        # Move one step across the post and drop a beeper
             self.move_avatar_forward()
             self.put_beeper()
 
+            # Keep moving forward (Down) until hitting the bottom, dropping beepers
             while not self.check_front_wall():
                 self.move_avatar_forward()
                 self.put_beeper()
 
+            # Check for the end and prepare for next post
+            # Turn right (3 left turns) to face East again
             self.turn_avatar_left()
             self.turn_avatar_left()
             self.turn_avatar_left()
 
+            # Stop condition: If the front is blocked after landing, it reached the end
             if self.check_front_wall():
-                break
+                break # Exit the infinite loop
+
+            # If not the end, move forward 3 steps to reach the next column
             self.move_avatar_forward()
             self.move_avatar_forward()
             self.move_avatar_forward()
+
+            # Turn left to face North (Up) and start the next loop
             self.turn_avatar_left()
 
 
