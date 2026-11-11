@@ -32,6 +32,7 @@ from world_maker.world_builder import MainWorld
 
 
 class StudentWorld(MainWorld):
+
     def __init__(self):
         # The following parameters are editable
         cell_size = 50 # Initial size of each square in the world. You can drag the window to resize
@@ -57,22 +58,64 @@ class StudentWorld(MainWorld):
         # Create a Maze of the selected size (max value 100)
         number_of_rows = 10
         number_of_cols = 10
-        self.create_maze(number_of_rows, number_of_cols)
+        #self.create_maze(number_of_rows, number_of_cols)
 
         # Create a Karel World from a Formatted Text File
         # Three stater worlds (Fill the Pothole) are in the package (i.e. "World1.txt", "World2.txt", and "World3.txt")
         # One starter world (Light Up Post) are in the package (i.e. "World4.txt")
-        # self.create_karel_world("World4.txt")
+        self.create_karel_world("World1.txt")
+    def turn_avatar_right(self):
+        self.turn_avatar_left()
+        self.turn_avatar_left()
+        self.turn_avatar_left()
 
     def student_solution(self):
         # Sdd your code here
-        print("Starting Student Solution")
-        self.move_avatar_forward()
-        sleep(self.solution_period/1000.0)
-        self.turn_avatar_left()
-        sleep(self.solution_period/1000.0)
-        self.move_avatar_forward()
-        self.put_beeper()
+
+        #loop check no wall
+        while not self.check_front_wall():
+            # check beeper at current position
+            self.pick_beeper()
+            #check if there is a wall to the right
+            if self.check_right_wall():
+                self.move_avatar_forward()
+                sleep(self.solution_period / 1000.0)
+            #if there is a pothole, fills it with beeper and continues on
+            else:
+                self.turn_avatar_right()
+                sleep(self.solution_period / 1000.0)
+                self.move_avatar_forward()
+                sleep(self.solution_period / 1000.0)
+                self.put_beeper()
+                sleep(self.solution_period / 1000.0)
+                self.turn_avatar_left()
+                sleep(self.solution_period / 1000.0)
+                self.turn_avatar_left()
+                sleep(self.solution_period / 1000.0)
+                self.move_avatar_forward()
+                sleep(self.solution_period / 1000.0)
+                self.check_right_wall()
+                sleep(self.solution_period / 1000.0)
+                self.turn_avatar_right()
+                sleep(self.solution_period / 1000.0)
+                self.move_avatar_forward()
+                sleep(self.solution_period / 1000.0)
+        #check for pothole before last wall. if there is one, fills it (currently WIP, works on W3, breaks in W1 & 2)
+        if self.check_front_wall():
+            self.turn_avatar_right()
+            sleep(self.solution_period / 1000.0)
+            self.move_avatar_forward()
+            sleep(self.solution_period / 1000.0)
+            self.put_beeper()
+            sleep(self.solution_period / 1000.0)
+            self.turn_avatar_left()
+            sleep(self.solution_period / 1000.0)
+            self.turn_avatar_left()
+            sleep(self.solution_period / 1000.0)
+            self.move_avatar_forward()
+            sleep(self.solution_period / 1000.0)
+            self.turn_avatar_right()
+            sleep(self.solution_period / 1000.0)
 
 
     def keyboard_event(self, event):
@@ -81,7 +124,7 @@ class StudentWorld(MainWorld):
                 'Up': self.move_avatar_forward,
                 'Down': None,
                 'Left': self.turn_avatar_left,
-                'Right': None,
+                'Right': self.turn_avatar_right,
             }
             func = keyboard_switch.get(event.keysym, None)
             if func is not None:
