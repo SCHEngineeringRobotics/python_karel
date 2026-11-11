@@ -62,30 +62,156 @@ class StudentWorld(MainWorld):
         # Create a Karel World from a Formatted Text File
         # Three stater worlds (Fill the Pothole) are in the package (i.e. "World1.txt", "World2.txt", and "World3.txt")
         # One starter world (Light Up Post) are in the package (i.e. "World4.txt")
-        # self.create_karel_world("World4.txt")
+        #  self.create_karel_world("World1.txt")
+
 
     def student_solution(self):
-        # Sdd your code here
-        print("Starting Student Solution")
-        self.move_avatar_forward()
-        sleep(self.solution_period/1000.0)
-        self.turn_avatar_left()
-        sleep(self.solution_period/1000.0)
-        self.move_avatar_forward()
-        self.put_beeper()
 
 
-    def keyboard_event(self, event):
-        if not self.is_student_running:
-            keyboard_switch = {
-                'Up': self.move_avatar_forward,
-                'Down': None,
-                'Left': self.turn_avatar_left,
-                'Right': None,
-            }
-            func = keyboard_switch.get(event.keysym, None)
-            if func is not None:
-                func()
+        # Choose the pzzlue
+        self.solve_maze()
+        # self.solve_potholes()
+
+
+    def turn_right(self):
+        for i in range(3):
+            self.turn_avatar_left()
+
+
+    def turn_around(self):
+        for i in range(2):
+            self.turn_avatar_left()
+
+
+    def solve_maze(self):
+        # Directions: North, East, South, West           this almost works
+        directions = [
+            (-1, 0),
+            (0, 1),
+            (1, 0),
+            (0, -1)
+        ]
+
+        # Start at the top-left, facing East
+        row = 0
+        col = 0
+        facing = 1
+
+        visited = {(row, col)}
+        stack = []
+
+        # Set this to the maze dimensins
+        rows = 10
+        cols = 10
+
+        while True:
+
+            # Stop at the bottom-right finish
+            if row == rows - 1 and col == cols - 1:
+                print("Maze Solved!")
+                break
+
+            moved = False
+
+            # Try all four directions
+            for new_direction in range(4):
+
+                dr, dc = directions[new_direction]
+                new_row = row + dr
+                new_col = col + dc
+
+                # Skip visited or out-of-bounds cells     yeah this also dont work abnd im scared and idk why
+                if not (0 <= new_row < rows):
+                    continue
+
+                if not (0 <= new_col < cols):
+                    continue
+
+                if (new_row, new_col) in visited:
+                    continue
+
+                # Turn toward the chosen direction
+                turns = (new_direction - facing) % 4
+
+                for i in range(turns):
+                    self.turn_avatar_left()
+
+                facing = new_direction
+
+                # Check whether movement is possible
+                if not self.check_front_wall():
+
+                    stack.append((row, col))
+                    self.move_avatar_forward()
+
+                    row = new_row
+                    col = new_col
+
+                    visited.add((row, col))
+                    self.paint_the_ground("blue")
+
+                    moved = True
+                    break
+
+            if not moved:
+
+                # No unexplored neighbors = backtrack
+                if not stack:
+                    print("No path found")
+                    break
+
+                previous_row, previous_col = stack.pop()
+
+                # Find direction to previous square.   this is chopped cheese :(
+                dr = previous_row - row
+                dc = previous_col - col
+
+                back_direction = directions.index((dr, dc))
+
+                turns = (back_direction - facing) % 4
+
+                for i in range(turns):
+                    self.turn_avatar_left()
+
+                facing = back_direction
+
+                self.move_avatar_forward()
+
+                row = previous_row
+                col = previous_col
+
+                self.paint_the_ground("yellow")
+
+            sleep(self.solution_period / 1000.0)
+
+
+    def solve_potholes(self):
+        print("Solving Potholes")
+
+        while not self.check_front_wall():
+
+            # COMPUTER, LOOK TO THE RIGHT
+            if not self.check_right_wall():
+
+                self.turn_right()
+                self.move_avatar_forward()
+
+                # Place a beeper in the pothole
+                self.put_beeper()
+
+                # Return to main path.    this part actually works I have no idea how but im not touching it
+                self.turn_around()
+                self.move_avatar_forward()
+                self.turn_right()
+
+            # JARVIS, CONTINUE FORWARD
+            if not self.check_front_wall():
+                self.move_avatar_forward()
+
+            sleep(self.solution_period / 1000.0)
+
+        print("Potholes Completed!")
+
 
 if __name__ == "__main__":
     # execute only if run as a script
