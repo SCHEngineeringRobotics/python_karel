@@ -28,6 +28,9 @@ from encodings import search_function
 
 # Imports
 from time import sleep
+
+from pip._internal import self_outdated_check
+
 from world_maker.world_builder import MainWorld
 
 
@@ -145,8 +148,13 @@ class StudentWorld(MainWorld):
 
         # Goal 2: implementation of the Right Hand Rule for Maze Solving
 
+
         # Loop indefinitely until the exit is reached
         while True:
+
+            # Stop condition: exit the loop if Karel reaches teh final destination which is (9,9)
+            if self.avatar.position == (9,9):
+                break
 
             # Check if the right side is open, if it is opened, turn right
             if not self.check_right_wall():
@@ -169,6 +177,30 @@ class StudentWorld(MainWorld):
                 # Turn left to find a new path
                 self.turn_avatar_left()
                 sleep(self.solution_period / 1000)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
