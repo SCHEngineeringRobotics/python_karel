@@ -377,6 +377,14 @@ class MainWorld(ABC):
             self.avatar.num_beepers += 1
             self.lbl_beepers_held.config(text="# Beepers : %i" % self.avatar.num_beepers)
 
+    def count_ground_beepers(self):
+        row, col = self.avatar.position
+        current_cell = self.scene.scene_graphics[row][col]
+        return current_cell.num_beepers
+
+    def count_avatar_beepers(self):
+        return self.avatar.num_beepers
+
     def check_front_wall(self):
         row, col = self.avatar.position
         current_cell = self.scene.scene_data[row][col]
@@ -394,12 +402,38 @@ class MainWorld(ABC):
         current_cell = self.scene.scene_data[row][col]
         return getattr(current_cell, current_cell.switch_wall[left_orientation])
 
-    def highlight_right_wall(self):
+    def check_north_wall(self):
+        row, col = self.avatar.position
+        current_cell = self.scene.scene_data[row][col]
+        return current_cell.wall_north
+
+    def check_east_wall(self):
+        row, col = self.avatar.position
+        current_cell = self.scene.scene_data[row][col]
+        return current_cell.wall_east
+
+    def check_south_wall(self):
+        row, col = self.avatar.position
+        current_cell = self.scene.scene_data[row][col]
+        return current_cell.wall_south
+
+    def check_west_wall(self):
+        row, col = self.avatar.position
+        current_cell = self.scene.scene_data[row][col]
+        return current_cell.wall_west
+
+    def get_avatar_location(self):
+        return self.avatar.position
+
+    def get_avatar_orientation(self):
+        return self.avatar.orientation
+
+    def highlight_right_wall(self, color_str):
         right_orientation = graphics.Orientation.next_cw(self.avatar.orientation)
         row, col = self.avatar.position
         current_cell = self.scene.scene_graphics[row][col]
         if getattr(current_cell, current_cell.switch_wall[right_orientation]):
-            current_cell.set_wall_color(right_orientation, "red")
+            current_cell.set_wall_color(right_orientation, color_str)
 
     def paint_the_ground(self, color_str):
         row, col = self.avatar.position
@@ -411,3 +445,14 @@ class MainWorld(ABC):
 
     def did_actions_fail(self):
         return self.action_failed
+
+    #----------------- Mapping Functions for Other Algorithms
+    def get_map_cell(self, row, col):
+        return self.scene.scene_graphics[row][col]
+
+    def get_map_goal_position(self):
+        return self.number_of_rows - 1, self.number_of_cols - 1
+
+    def paint_map_ground(self, row, col, color_str):
+        current_cell = self.scene.scene_graphics[row][col]
+        current_cell.set_floor_color(color_str)
