@@ -34,7 +34,6 @@ import pygame
 
 # File management
 import importlib.resources
-import world_maker.resources
 
 # My Packages
 from world_maker import graphics_builder as graphics
@@ -224,6 +223,7 @@ class MainWorld(ABC):
 
     def create_karel_world(self, world_filename):
         # Check for World Template
+        world_text = ""
         world_source = importlib.resources.files("world_maker.resources").joinpath(world_filename)
         if world_source.is_file():
             world_text = world_source.read_text()
@@ -235,6 +235,7 @@ class MainWorld(ABC):
             except FileNotFoundError:
                 print("File %s cannot be opened." % world_filename)
         else:
+
             ImportError("Filename %s was not found in the package or on the patch" % world_filename)
 
         # Avatar (initialize to 0,0)
