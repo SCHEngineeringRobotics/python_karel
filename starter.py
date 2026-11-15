@@ -1,30 +1,49 @@
 """
 Instructions
-0) Install the two libraries needed from the Git Repository
-1) Write your own code in the student_solution function below
-2) Run the program, hit the Make Maze Button and then Run Solution
+0) Students will need to make sure they are running in a virtual environment with Python 3.14+
+1) Students will need to install one library to play sound
+    click on terminal and type the following command
+    pip install pygame-ce
+2) Write your own code in the student_solution function below
+3) Run the program, hit the Draw Scene Button and then Run Solution
 
 Inherited Attributes
     self.scene - SceneBuilder Object with Useful Functions and Attributes
     self.avatar - MazeAvatar Object with Useful Functions and Attributes
     
-Inherited Functions
+Inherited Basic Functions
     self.move_avatar_forward()
     self.turn_avatar_left()
 
     self.put_beeper()
     self.pick_beeper()
+    self.count_ground_beepers()
+    self.count_avatar_beepers()
 
     self.check_front_wall()
     self.check_right_wall()
     self.check_left_wall()
-    
-    self.highlight_right_wall()
+
+    self.check_north_wall():
+    self.check_east_wall():
+    self.check_south_wall():
+    self.check_west_wall():
+
+    self.is_avatar_at_goal():
+    self.did_actions_fail(color_str):
+
+Inherited Map Functions
+    self.get_avatar_location():
+    self.get_avatar_orientation(color_str):
+    self.get_map_cell():
+    self.get_map_goal_position():
+
+Inherited Map Decoration Functions
+    self.highlight_right_wall(color), where color can be string (e.g. "blue") or hex code (e.g. #9D2235)
     self.paint_the_ground(color), where color can be string (e.g. "blue") or hex code (e.g. #9D2235)
+    self.paint_map_ground(color), where color can be string (e.g. "blue") or hex code (e.g. #9D2235)
 """
 
-# Students will need to click on terminal and type the following command
-# pip install pygame
 
 # Imports
 from time import sleep
@@ -70,55 +89,24 @@ class StudentWorld(MainWorld):
         self.turn_avatar_left()
 
     def student_solution(self):
-        # Sdd your code here
-
-        #loop check no wall
-        while not self.check_front_wall():
-            # check beeper at current position
-            self.pick_beeper()
-            #check if there is a wall to the right
-            if self.check_right_wall():
-                self.move_avatar_forward()
-                sleep(self.solution_period / 1000.0)
-            #if there is a pothole, fills it with beeper and continues on
-            else:
-                self.turn_avatar_right()
-                sleep(self.solution_period / 1000.0)
-                self.move_avatar_forward()
-                sleep(self.solution_period / 1000.0)
-                self.put_beeper()
-                sleep(self.solution_period / 1000.0)
-                self.turn_avatar_left()
-                sleep(self.solution_period / 1000.0)
-                self.turn_avatar_left()
-                sleep(self.solution_period / 1000.0)
-                self.move_avatar_forward()
-                sleep(self.solution_period / 1000.0)
-                self.check_right_wall()
-                sleep(self.solution_period / 1000.0)
-                self.turn_avatar_right()
-                sleep(self.solution_period / 1000.0)
-                self.move_avatar_forward()
-                sleep(self.solution_period / 1000.0)
-        #check for pothole before last wall. if there is one, fills it (currently WIP, works on W3, breaks in W1 & 2)
-        if self.check_front_wall():
-            self.turn_avatar_right()
-            sleep(self.solution_period / 1000.0)
-            self.move_avatar_forward()
-            sleep(self.solution_period / 1000.0)
-            self.put_beeper()
-            sleep(self.solution_period / 1000.0)
-            self.turn_avatar_left()
-            sleep(self.solution_period / 1000.0)
-            self.turn_avatar_left()
-            sleep(self.solution_period / 1000.0)
-            self.move_avatar_forward()
-            sleep(self.solution_period / 1000.0)
-            self.turn_avatar_right()
-            sleep(self.solution_period / 1000.0)
+        # Add your code here
+        print("Starting Student Solution")
+        # Move Forward 1 Spot
+        self.move_avatar_forward()
+        # Pause for Visualization
+        sleep(self.solution_period/1000.0)
+        # Turn Avatar to its Left
+        self.turn_avatar_left()
+        # Pause for Visualization
+        sleep(self.solution_period/1000.0)
+        # Move Forward 1 Spot
+        self.move_avatar_forward()
+        # Put Down 1 Beeper from Avatar Backpack
+        self.put_beeper()
 
 
     def keyboard_event(self, event):
+        # You can modify this with function handles to bind functions to key press
         if not self.is_student_running:
             keyboard_switch = {
                 'Up': self.move_avatar_forward,
