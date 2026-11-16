@@ -59,6 +59,10 @@ class StudentWorld(MainWorld):
         number_of_rows = 9
         number_of_cols = 9
         self.create_maze(number_of_rows, number_of_cols)
+        #Create a Maze of the selected size (max value 100)
+        number_of_rows = 10
+        number_of_cols = 10
+        #self.create_maze(number_of_rows, number_of_cols)
 
         # Create a Karel World from a Formatted Text File
         # Three stater worlds (Fill the Pothole) are in the package (i.e. "World1.txt", "World2.txt", and "World3.txt")
@@ -66,6 +70,8 @@ class StudentWorld(MainWorld):
         # self.create_karel_world("World3.txt")
 
     # helper function to turn avatar right when needed
+        self.create_karel_world("World1.txt")
+    #helper function to turn avatar right when needed
     def turn_avatar_right(self):
         self.turn_avatar_left()
         self.turn_avatar_left()
@@ -75,6 +81,76 @@ class StudentWorld(MainWorld):
         # comment out whichever one isn't being used
         # self.pothole_world_solution()
         self.maze_solution()
+        #comment out whichever one isn't being used
+        self.pothole_world_solution()
+        #self.maze_solution()
+
+
+    def pothole_world_solution(self):
+        #loop check if there is open space in front of avatar, executes solution loop
+        while not self.check_front_wall():
+            # check beeper at current position
+            self.pick_beeper()
+            #check if there is a wall to the right
+            if self.check_right_wall():
+                self.move_avatar_forward()
+                sleep(self.solution_period / 1000.0)
+            #if there is a pothole, fills it with beeper and continues on
+            else:
+                self.turn_avatar_right()
+                sleep(self.solution_period / 1000.0)
+                self.move_avatar_forward()
+                sleep(self.solution_period / 1000.0)
+                self.put_beeper()
+                sleep(self.solution_period / 1000.0)
+                self.turn_avatar_left()
+                sleep(self.solution_period / 1000.0)
+                self.turn_avatar_left()
+                sleep(self.solution_period / 1000.0)
+                self.move_avatar_forward()
+                sleep(self.solution_period / 1000.0)
+                self.check_right_wall()
+                sleep(self.solution_period / 1000.0)
+                self.turn_avatar_right()
+                sleep(self.solution_period / 1000.0)
+                self.move_avatar_forward()
+                sleep(self.solution_period / 1000.0)
+        #check for pothole before last wall. if there is one, fills it
+        if self.check_front_wall and not self.check_right_wall():
+            self.turn_avatar_right()
+            sleep(self.solution_period / 1000.0)
+            self.move_avatar_forward()
+            sleep(self.solution_period / 1000.0)
+            self.put_beeper()
+            sleep(self.solution_period / 1000.0)
+            self.turn_avatar_left()
+            sleep(self.solution_period / 1000.0)
+            self.turn_avatar_left()
+            sleep(self.solution_period / 1000.0)
+            self.move_avatar_forward()
+            sleep(self.solution_period / 1000.0)
+            self.turn_avatar_right()
+            sleep(self.solution_period / 1000.0)
+
+    def maze_solution(self):
+        #runs loop until the avatar finds its way to the goal
+        while not self.is_avatar_at_goal():
+            #highlights right wall as algorithm is executed for visual on avatar's path
+            self.highlight_right_wall()
+            #moves avatar forward if it can go forward
+            if not self.check_front_wall():
+                self.move_avatar_forward()
+                sleep(self.solution_period / 1000.0)
+            """if there is a wall to the right and front of the avatar, 
+            it turns left, which will turn it around if in a dead end"""
+            if self.check_front_wall() and self.check_right_wall():
+                self.turn_avatar_left()
+                sleep(self.solution_period / 1000.0)
+            #allows the avatar to hug the right wall till the end of the maze
+            if not self.check_right_wall():
+                self.turn_avatar_right()
+                sleep(self.solution_period / 1000.0)
+
 
     def pothole_world_solution(self):
         # loop check if there is open space in front of avatar, executes solution loop
