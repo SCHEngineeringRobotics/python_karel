@@ -141,6 +141,10 @@ class StudentWorld(MainWorld):
                 self.turn_avatar_right()
                 sleep(self.solution_period / 1000.0)
 
+    def depth_solution(self):
+        while not self.is_avatar_at_goal():
+            pass
+
     def keyboard_event(self, event):
         if not self.is_student_running:
             keyboard_switch = {
