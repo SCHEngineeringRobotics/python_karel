@@ -7,7 +7,7 @@ Instructions
 Inherited Attributes
     self.scene - SceneBuilder Object with Useful Functions and Attributes
     self.avatar - MazeAvatar Object with Useful Functions and Attributes
-    
+
 Inherited Functions
     self.move_avatar_forward()
     self.turn_avatar_left()
@@ -18,7 +18,7 @@ Inherited Functions
     self.check_front_wall()
     self.check_right_wall()
     self.check_left_wall()
-    
+
     self.highlight_right_wall()
     self.paint_the_ground(color), where color can be string (e.g. "blue") or hex code (e.g. #9D2235)
 """
@@ -32,15 +32,16 @@ from world_maker.world_builder import MainWorld
 
 
 class StudentWorld(MainWorld):
+
     def __init__(self):
         # The following parameters are editable
-        cell_size = 50 # Initial size of each square in the world. You can drag the window to resize
+        cell_size = 50  # Initial size of each square in the world. You can drag the window to resize
 
         # This parameter changes the visualization speed for the algorithm that creates the maze
-        creation_period = 0 # time in milliseconds
+        creation_period = 0  # time in milliseconds
 
         # This parameter changes the speed at which your personal solution will solve the maze
-        solution_period = 40 # time in milliseconds
+        solution_period = 40  # time in milliseconds
 
         # This parameter sets the starting point for the random number generator.
         # We will use the same seed during the workshop so that we all start off solving the same maze.
@@ -55,25 +56,90 @@ class StudentWorld(MainWorld):
         super().__init__(cell_size, creation_period, solution_period, seed)
 
         # Create a Maze of the selected size (max value 100)
-        number_of_rows = 10
-        number_of_cols = 10
+        number_of_rows = 9
+        number_of_cols = 9
         self.create_maze(number_of_rows, number_of_cols)
 
         # Create a Karel World from a Formatted Text File
         # Three stater worlds (Fill the Pothole) are in the package (i.e. "World1.txt", "World2.txt", and "World3.txt")
         # One starter world (Light Up Post) are in the package (i.e. "World4.txt")
-        # self.create_karel_world("World4.txt")
+        # self.create_karel_world("World3.txt")
+
+    # helper function to turn avatar right when needed
+    def turn_avatar_right(self):
+        self.turn_avatar_left()
+        self.turn_avatar_left()
+        self.turn_avatar_left()
 
     def student_solution(self):
-        # Sdd your code here
-        print("Starting Student Solution")
-        self.move_avatar_forward()
-        sleep(self.solution_period/1000.0)
-        self.turn_avatar_left()
-        sleep(self.solution_period/1000.0)
-        self.move_avatar_forward()
-        self.put_beeper()
+        # comment out whichever one isn't being used
+        # self.pothole_world_solution()
+        self.maze_solution()
 
+    def pothole_world_solution(self):
+        # loop check if there is open space in front of avatar, executes solution loop
+        while not self.check_front_wall():
+            # check beeper at current position
+            self.pick_beeper()
+            # check if there is a wall to the right
+            if self.check_right_wall():
+                self.move_avatar_forward()
+                sleep(self.solution_period / 1000.0)
+            # if there is a pothole, fills it with beeper and continues on
+            else:
+                self.turn_avatar_right()
+                sleep(self.solution_period / 1000.0)
+                self.move_avatar_forward()
+                sleep(self.solution_period / 1000.0)
+                self.put_beeper()
+                sleep(self.solution_period / 1000.0)
+                self.turn_avatar_left()
+                sleep(self.solution_period / 1000.0)
+                self.turn_avatar_left()
+                sleep(self.solution_period / 1000.0)
+                self.move_avatar_forward()
+                sleep(self.solution_period / 1000.0)
+                self.check_right_wall()
+                sleep(self.solution_period / 1000.0)
+                self.turn_avatar_right()
+                sleep(self.solution_period / 1000.0)
+                self.move_avatar_forward()
+                sleep(self.solution_period / 1000.0)
+        # check for pothole before last wall. if there is one, fills it
+        if self.check_front_wall and not self.check_right_wall():
+            self.turn_avatar_right()
+            sleep(self.solution_period / 1000.0)
+            self.move_avatar_forward()
+            sleep(self.solution_period / 1000.0)
+            self.put_beeper()
+            sleep(self.solution_period / 1000.0)
+            self.turn_avatar_left()
+            sleep(self.solution_period / 1000.0)
+            self.turn_avatar_left()
+            sleep(self.solution_period / 1000.0)
+            self.move_avatar_forward()
+            sleep(self.solution_period / 1000.0)
+            self.turn_avatar_right()
+            sleep(self.solution_period / 1000.0)
+
+    def maze_solution(self):
+        # runs loop until the avatar finds its way to the goal
+        while not self.is_avatar_at_goal():
+            # highlights right wall as algorithm is executed for visual on avatar's path
+            self.highlight_right_wall()
+            # moves avatar forward if it can go forward
+            if not self.check_front_wall():
+                self.move_avatar_forward()
+                sleep(self.solution_period / 1000.0)
+            """if there is a wall to the right and front of the avatar, 
+            it turns left, which will turn it around if in a dead end"""
+            if self.check_front_wall() and self.check_right_wall():
+                self.turn_avatar_left()
+                sleep(self.solution_period / 1000.0)
+            # allows the avatar to hug the right wall till the end of the maze
+            if not self.check_right_wall():
+                self.turn_avatar_right()
+                sleep(self.solution_period / 1000.0)
 
     def keyboard_event(self, event):
         if not self.is_student_running:
@@ -81,11 +147,12 @@ class StudentWorld(MainWorld):
                 'Up': self.move_avatar_forward,
                 'Down': None,
                 'Left': self.turn_avatar_left,
-                'Right': None,
+                'Right': self.turn_avatar_right,
             }
             func = keyboard_switch.get(event.keysym, None)
             if func is not None:
                 func()
+
 
 if __name__ == "__main__":
     # execute only if run as a script
