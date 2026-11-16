@@ -22,7 +22,7 @@ Inherited Functions
     self.highlight_right_wall()
     self.paint_the_ground(color), where color can be string (e.g. "blue") or hex code (e.g. #9D2235)
 """
-
+from shutil import posix
 # Students will need to click on terminal and type the following command
 # pip install pygame
 
@@ -40,7 +40,7 @@ class StudentWorld(MainWorld):
         creation_period = 0 # time in milliseconds
 
         # This parameter changes the speed at which your personal solution will solve the maze
-        solution_period = 40 # time in milliseconds
+        solution_period = 250 # time in milliseconds
 
         # This parameter sets the starting point for the random number generator.
         # We will use the same seed during the workshop so that we all start off solving the same maze.
@@ -57,19 +57,19 @@ class StudentWorld(MainWorld):
         # Create a Maze of the selected size (max value 100)
         number_of_rows = 10
         number_of_cols = 10
-        self.create_maze(number_of_rows, number_of_cols)
+        # self.create_maze(number_of_rows, number_of_cols)
 
         # Create a Karel World from a Formatted Text File
         # Three stater worlds (Fill the Pothole) are in the package (i.e. "World1.txt", "World2.txt", and "World3.txt")
         # One starter world (Light Up Post) are in the package (i.e. "World4.txt")
-        #  self.create_karel_world("World1.txt")
+        self.create_karel_world("World3.txt")
 
 
     def student_solution(self):
 
 
         # Choose the pzzlue
-        self.solve_maze()
+        self.solve_potholes()
         # self.solve_potholes()
 
 
@@ -83,7 +83,7 @@ class StudentWorld(MainWorld):
             self.turn_avatar_left()
 
 
-    def solve_maze(self):
+    def solve_puzzle(self):
         # Directions: North, East, South, West           this almost works
         directions = [
             (-1, 0),
@@ -105,6 +105,9 @@ class StudentWorld(MainWorld):
         cols = 10
 
         while True:
+
+
+
 
             # Stop at the bottom-right finish
             if row == rows - 1 and col == cols - 1:
@@ -185,14 +188,19 @@ class StudentWorld(MainWorld):
             sleep(self.solution_period / 1000.0)
 
 
+
+
+
     def solve_potholes(self):
         print("Solving Potholes")
 
         while not self.check_front_wall():
 
+
             # COMPUTER, LOOK TO THE RIGHT
             if not self.check_right_wall():
 
+                self.pick_beeper()
                 self.turn_right()
                 self.move_avatar_forward()
 
@@ -203,6 +211,11 @@ class StudentWorld(MainWorld):
                 self.turn_around()
                 self.move_avatar_forward()
                 self.turn_right()
+
+
+
+
+
 
             # JARVIS, CONTINUE FORWARD
             if not self.check_front_wall():
