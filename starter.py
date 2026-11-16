@@ -103,6 +103,7 @@ class StudentWorld(MainWorld):
         # comment out whichever one isn't being used
         #self.pothole_world_solution()
         self.maze_solution()
+        #self.depth_solution()
 
     def pothole_world_solution(self):
         #loop check if there is open space in front of avatar, executes solution loop
@@ -184,8 +185,15 @@ class StudentWorld(MainWorld):
                 sleep(self.solution_period / 1000.0)
     def depth_solution(self):
         while not self.is_avatar_at_goal():
-            pass
-
+            if self.check_right_wall():
+                if not self.check_front_wall():
+                    self.move_avatar_forward()
+                else:
+                    self.turn_avatar_left()
+            else:
+                self.turn_avatar_right()
+                self.highlight_right_wall("red")
+                self.move_avatar_forward()
 
     def keyboard_event(self, event):
         # You can modify this with function handles to bind functions to key press
