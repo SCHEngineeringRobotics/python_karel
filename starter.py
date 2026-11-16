@@ -79,9 +79,8 @@ class StudentWorld(MainWorld):
 
     def student_solution(self):
         # comment out whichever one isn't being used
-        self.pothole_world_solution()
-        #self.maze_solution()
-
+        #self.pothole_world_solution()
+        self.maze_solution()
 
     def pothole_world_solution(self):
         #loop check if there is open space in front of avatar, executes solution loop
@@ -147,7 +146,6 @@ class StudentWorld(MainWorld):
             if not self.check_right_wall():
                 self.turn_avatar_right()
                 sleep(self.solution_period / 1000.0)
-
     def depth_solution(self):
         while not self.is_avatar_at_goal():
             pass
