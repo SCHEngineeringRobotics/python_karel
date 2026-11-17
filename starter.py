@@ -67,7 +67,7 @@ class StudentWorld(MainWorld):
 
         # This parameter sets the starting point for the random number generator.
         # We will use the same seed during the workshop so that we all start off solving the same maze.
-        seed = 1884
+        seed = 188444
 
         """
             Do not modify the super().__init__() command.
@@ -78,8 +78,8 @@ class StudentWorld(MainWorld):
         super().__init__(cell_size, creation_period, solution_period, seed)
 
         # Create a Maze of the selected size (max value 100)
-        number_of_rows = 9
-        number_of_cols = 9
+        number_of_rows = 15
+        number_of_cols = 15
         self.create_maze(number_of_rows, number_of_cols)
         #Create a Maze of the selected size (max value 100)
         number_of_rows = 10
@@ -102,8 +102,10 @@ class StudentWorld(MainWorld):
     def student_solution(self):
         # comment out whichever one isn't being used
         #self.pothole_world_solution()
-        self.maze_solution()
-        #self.depth_solution()
+        #self.maze_solution()
+        self.separate_solution()
+        #sample = [2,2]
+        #list = ([0,0], [0,1], [1,1], [1,2], [2,2])
 
     def pothole_world_solution(self):
         #loop check if there is open space in front of avatar, executes solution loop
@@ -169,7 +171,7 @@ class StudentWorld(MainWorld):
         #runs loop until the avatar finds its way to the goal
         while not self.is_avatar_at_goal():
             #highlights right wall as algorithm is executed for visual on avatar's path
-            self.highlight_right_wall()
+            #self.highlight_right_wall()
             #moves avatar forward if it can go forward
             if not self.check_front_wall():
                 self.move_avatar_forward()
@@ -183,17 +185,25 @@ class StudentWorld(MainWorld):
             if not self.check_right_wall():
                 self.turn_avatar_right()
                 sleep(self.solution_period / 1000.0)
-    def depth_solution(self):
+    def separate_solution(self):
         while not self.is_avatar_at_goal():
+            self.paint_the_ground("blue")
+            #self.highlight_right_wall("red")
             if self.check_right_wall():
                 if not self.check_front_wall():
                     self.move_avatar_forward()
+                    sleep(self.solution_period / 1000.0)
                 else:
                     self.turn_avatar_left()
+                    sleep(self.solution_period / 1000.0)
             else:
                 self.turn_avatar_right()
-                self.highlight_right_wall("red")
+                sleep(self.solution_period / 1000.0)
                 self.move_avatar_forward()
+                sleep(self.solution_period / 1000.0)
+
+    def depth_maze_algorithm(self):
+        pass
 
     def keyboard_event(self, event):
         # You can modify this with function handles to bind functions to key press
