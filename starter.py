@@ -22,7 +22,9 @@ Inherited Functions
     self.highlight_right_wall()
     self.paint_the_ground(color), where color can be string (e.g. "blue") or hex code (e.g. #9D2235)
 """
+import queue
 from encodings import search_function
+from sys import excepthook
 # Students will need to click on terminal and type the following command
 # pip install pygame
 
@@ -37,13 +39,13 @@ from world_maker.world_builder import MainWorld
 class StudentWorld(MainWorld):
     def __init__(self):
         # The following parameters are editable
-        cell_size = 50 # Initial size of each square in the world. You can drag the window to resize
+        cell_size = 50  # Initial size of each square in the world. You can drag the window to resize
 
         # This parameter changes the visualization speed for the algorithm that creates the maze
-        creation_period = 0 # time in milliseconds
+        creation_period = 0  # time in milliseconds
 
         # This parameter changes the speed at which your personal solution will solve the maze
-        solution_period = 200 # time in milliseconds
+        solution_period = 200  # time in milliseconds
 
         # This parameter sets the starting point for the random number generator.
         # We will use the same seed during the workshop so that we all start off solving the same maze.
@@ -66,7 +68,6 @@ class StudentWorld(MainWorld):
         # Three stater worlds (Fill the Pothole) are in the package (i.e. "World1.txt", "World2.txt", and "World3.txt")
         # One starter world (Light Up Post) are in the package (i.e. "World4.txt")
         # self.create_karel_world("World3.txt")
-
 
     def turn_right(self):
         self.turn_avatar_left()
@@ -140,42 +141,190 @@ class StudentWorld(MainWorld):
     #             self.turn_right()
     #             sleep(self.solution_period / 1000)
 
+    # def student_solution(self):
+    #
+    #     # Goal 2: implementation of the Right Hand Rule for Maze Solving
+    #
+    #
+    #     # Loop indefinitely until the exit is reached
+    #     while True:
+    #
+    #         # Stop condition: exit the loop if Karel reaches teh final destination which is (9,9)
+    #         if self.avatar.position == (9,9):
+    #             break
+    #
+    #         # Check if the right side is open, if it is opened, turn right
+    #         if not self.check_right_wall():
+    #
+    #
+    #             # If the right is open, turn right and move forward to hug the wall
+    #             self.turn_right()
+    #             sleep(self.solution_period / 1000)
+    #             self.move_avatar_forward()
+    #             sleep(self.solution_period / 1000)
+    #
+    #         # If the right is blocked, check if the front is open
+    #         elif not self.check_front_wall():
+    #             # If front is open, just move forward
+    #             self.move_avatar_forward()
+    #             sleep(self.solution_period / 1000)
+    #
+    #         # If both the right is blocked, check it the front is open
+    #         else:
+    #             # Turn left to find a new path
+    #             self.turn_avatar_left()
+    #             sleep(self.solution_period / 1000)
 
 
 
 
     def student_solution(self):
 
-        # Goal 2: implementation of the Right Hand Rule for Maze Solving
+        # Directions: North, East, South, West
+        directions = [
+            (-1, 0),
+            (0, 1),
+            (1, 0),
+            (0, -1)
+        ]
 
+        # Get the starting position
+        start = self.avatar.position
+        # Get the goal position
+        goal = (
+            self.scene.goal_cell.row,
+            self.scene.goal_cell.col,
+        )
 
-        # Loop indefinitely until the exit is reached
-        while True:
+        # Get the maze size
+        rows = self.scene.number_of_rows
+        cols = self.scene.number_of_cols
 
-            # Stop condition: exit the loop if Karel reaches teh final destination which is (9,9)
-            if self.avatar.position == (9,9):
+        # Create a queue for BFS
+        q = queue.Queue()
+        # Add the starting position
+        q.put(start)
+
+        # Remember which places it has visited
+        visited = set()
+        visited.add(start)
+
+        # Remember the previous position
+        parent = {}
+
+        # Remember the direction used to reach each position
+        move_direction = {}
+
+        # Explore the maze using BFS
+        while not q.empty():
+            # Get the current position
+            current = q.get()
+
+            # Stop when we find the goal
+            if current == goal:
                 break
 
-            # Check if the right side is open, if it is opened, turn right
-            if not self.check_right_wall():
+            # Get the current cell
+            current_cell = self.scene.scene_data[current [0]][current [1]]
 
+            print("Exploring:", current)
 
-                # If the right is open, turn right and move forward to hug the wall
-                self.turn_right()
-                sleep(self.solution_period / 1000)
+            print("Current position:", current)
+
+            print("North:", current_cell.wall_north)
+            print("East:", current_cell.wall_east)
+            print("South:", current_cell.wall_south)
+            print("West:", current_cell.wall_west)
+
+            print("East cell west wall:", self.scene.scene_data[0][1].wall_west)
+            print("South cell north wall:", self.scene.scene_data[1][0].wall_north)
+
+            # Check all four directions
+            for direction in range(4):
+
+                row_change, col_change = directions[direction]
+
+                next_cell = (
+                    current[0] + row_change,
+                    current[1] + col_change
+        )
+
+                # Skip places outside the maze
+                if (next_cell [0] < 0 or
+                    next_cell [0] >= rows or
+                    next_cell [1] < 0 or
+                    next_cell [1] >= cols):
+                    continue
+
+                # Skip places we already visited
+                if next_cell in visited:
+                    continue
+
+                # Check the wall in this direction
+                if direction == 0:
+                    wall = current_cell.wall_north
+
+                elif direction == 1:
+                    wall = current_cell.wall_east
+
+                elif direction == 2:
+                    wall = current_cell.wall_south
+
+                else:
+                    wall = current_cell.wall_west
+
+                # Don't move through a wall
+                if wall:
+                    continue
+
+                # Remember this place
+                visited.add(next_cell)
+
+                # Remember the previous position
+                parent[next_cell] = current
+
+                # Remember the direction
+                move_direction[next_cell] = direction
+
+                # Add the new place to the queue
+                q.put(next_cell)
+
+            # Stop if the goal cannot be reached
+            print("Total visited:", len(visited))
+            print("Goal:", goal)
+            print("Last visited cells:", list(visited) [-10:])
+
+            if goal not in visited:
+                print("No path found")
+                return
+
+            # Build the shortest path backwards
+            path = []
+            current = goal
+
+            while current != start:
+                path.append(move_direction[current])
+                current = parent[current]
+
+            # Reverse the path
+            path.reverse()
+
+            print("Start:", start)
+            print("Goal:", goal)
+            print("Path length:", len(path))
+
+            # Get the avatar's starting direction
+            current_direction = self.avatar.orientation
+
+            # Follow the shortest path
+            for direction in path:
+                # Face the correct direction
+                self.face_direction(current_direction, direction)
+                # Move forward
                 self.move_avatar_forward()
-                sleep(self.solution_period / 1000)
+                # Update the current direction
+                current_direction = direction
 
-            # If the right is blocked, check if the front is open
-            elif not self.check_front_wall():
-                # If front is open, just move forward
-                self.move_avatar_forward()
-                sleep(self.solution_period / 1000)
-
-            # If both the right is blocked, check it the front is open
-            else:
-                # Turn left to find a new path
-                self.turn_avatar_left()
                 sleep(self.solution_period / 1000)
 
 
@@ -184,43 +333,19 @@ class StudentWorld(MainWorld):
 
 
 
+def keyboard_event(self, event):
+    if not self.is_student_running:
+        keyboard_switch = {
+            'Up': self.move_avatar_forward,
+            'Down': None,
+            'Left': self.turn_avatar_left,
+            'Right': None,
+        }
+        func = keyboard_switch.get(event.keysym, None)
+        if func is not None:
+            func()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    def keyboard_event(self, event):
-        if not self.is_student_running:
-                keyboard_switch = {
-                    'Up': self.move_avatar_forward,
-                    'Down': None,
-                    'Left': self.turn_avatar_left,
-                    'Right': None,
-                }
-                func = keyboard_switch.get(event.keysym, None)
-                if func is not None:
-                    func()
 
 if __name__ == "__main__":
     # execute only if run as a script
     StudentWorld()
-
