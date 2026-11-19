@@ -33,17 +33,16 @@ from world_maker.world_builder import MainWorld
 
 class StudentWorld(MainWorld):
     def __init__(self):
-        # The following parameters are editable
-        cell_size = 50 # Initial size of each square in the world. You can drag the window to resize
 
-        # This parameter changes the visualization speed for the algorithm that creates the maze
-        creation_period = 0 # time in milliseconds
+        cell_size = 50
 
-        # This parameter changes the speed at which your personal solution will solve the maze
-        solution_period = 250 # time in milliseconds
 
-        # This parameter sets the starting point for the random number generator.
-        # We will use the same seed during the workshop so that we all start off solving the same maze.
+        creation_period = 0
+
+
+        solution_period = 250
+
+
         seed = 1884
 
         """
@@ -55,21 +54,17 @@ class StudentWorld(MainWorld):
         super().__init__(cell_size, creation_period, solution_period, seed)
 
         # Create a Maze of the selected size (max value 100)
-        number_of_rows = 10
-        number_of_cols = 10
-        # self.create_maze(number_of_rows, number_of_cols)
+        number_of_rows = 3
+        number_of_cols = 3
+        self.create_maze(number_of_rows, number_of_cols)
 
-        # Create a Karel World from a Formatted Text File
-        # Three stater worlds (Fill the Pothole) are in the package (i.e. "World1.txt", "World2.txt", and "World3.txt")
-        # One starter world (Light Up Post) are in the package (i.e. "World4.txt")
-        self.create_karel_world("World3.txt")
 
 
     def student_solution(self):
 
 
         # Choose the pzzlue
-        self.solve_potholes()
+        self.solve_puzzle()
         # self.solve_potholes()
 
 
@@ -84,7 +79,8 @@ class StudentWorld(MainWorld):
 
 
     def solve_puzzle(self):
-        # Directions: North, East, South, West           this almost works
+
+        # Directions: North, East, South, West
         directions = [
             (-1, 0),
             (0, 1),
@@ -92,100 +88,170 @@ class StudentWorld(MainWorld):
             (0, -1)
         ]
 
-        # Start at the top-left, facing East
+        # i start here
         row = 0
         col = 0
         facing = 1
 
+        #
+        rows = 3
+        cols = 3
+
         visited = {(row, col)}
+        dead_ends = []
         stack = []
 
-        # Set this to the maze dimensins
-        rows = 10
-        cols = 10
+        # Remember how we reached each square
+        parents = {}
 
+
+        open_counts = {}
+
+        def turn_to(direction):
+            nonlocal facing
+
+            # Calculate LEFT turns
+            turns = (facing - direction) % 4
+
+            for i in range(turns):
+                self.turn_avatar_left()
+
+            facing = direction
+
+        def move_to(target_row, target_col):          #target funtion and also it adds to the blacklist
+            nonlocal row, col
+
+            dr = target_row - row
+            dc = target_col - col
+
+            direction = directions.index((dr, dc))
+
+            turn_to(direction)
+
+            if not self.check_front_wall():  #we gotta check our paramerters before the main funciton cus like walls n stuff
+                self.move_avatar_forward()
+                row = target_row
+                col = target_col
+                return True
+
+            return False
+
+        # DEPTH FIRST SEARCH
         while True:
 
+            current = (row, col)
 
 
+            if current not in open_counts:
 
-            # Stop at the bottom-right finish
-            if row == rows - 1 and col == cols - 1:
-                print("Maze Solved!")
-                break
+                count = 0
+
+                for direction in range(4):
+
+                    dr, dc = directions[direction]
+                    nr = row + dr
+                    nc = col + dc
+
+                    if 0 <= nr < rows and 0 <= nc < cols:
+
+                        turn_to(direction)
+
+                        if not self.check_front_wall():
+                            count += 1
+
+                open_counts[current] = count
+
+                # A real dead end has only one exit
+                if count == 1 and current != (0, 0):
+                    dead_ends.append(current)
+                    self.paint_the_ground("red")
+                else:
+                    self.paint_the_ground("blue")
 
             moved = False
 
-            # Try all four directions
-            for new_direction in range(4):
+            # Explore unvisited neighboring squares
+            for direction in range(4):
 
-                dr, dc = directions[new_direction]
-                new_row = row + dr
-                new_col = col + dc
+                dr, dc = directions[direction]
+                nr = row + dr
+                nc = col + dc
 
-                # Skip visited or out-of-bounds cells     yeah this also dont work abnd im scared and idk why
-                if not (0 <= new_row < rows):
+                if not (0 <= nr < rows):         #yeah man couldnt tell you how this works
                     continue
 
-                if not (0 <= new_col < cols):
+                if not (0 <= nc < cols):
                     continue
 
-                if (new_row, new_col) in visited:
+                if (nr, nc) in visited:       #the github guy did this
                     continue
 
-                # Turn toward the chosen direction
-                turns = (new_direction - facing) % 4
+                turn_to(direction)
 
-                for i in range(turns):
-                    self.turn_avatar_left()
-
-                facing = new_direction
-
-                # Check whether movement is possible
                 if not self.check_front_wall():
 
-                    stack.append((row, col))
+                    # Save current position
+                    stack.append(current)
+
+                    parents[(nr, nc)] = current
+
                     self.move_avatar_forward()
 
-                    row = new_row
-                    col = new_col
+                    row = nr
+                    col = nc
 
                     visited.add((row, col))
-                    self.paint_the_ground("blue")
 
                     moved = True
                     break
 
-            if not moved:
+            if not moved:       #every other condition falls under here uhhh I hope
 
-                # No unexplored neighbors = backtrack
+                # All reachable squares explored
                 if not stack:
-                    print("No path found")
                     break
 
-                previous_row, previous_col = stack.pop()
+                # Backtrack
+                previous = stack.pop()
 
-                # Find direction to previous square.   this is chopped cheese :(
-                dr = previous_row - row
-                dc = previous_col - col
-
-                back_direction = directions.index((dr, dc))
-
-                turns = (back_direction - facing) % 4
-
-                for i in range(turns):
-                    self.turn_avatar_left()
-
-                facing = back_direction
-
-                self.move_avatar_forward()
-
-                row = previous_row
-                col = previous_col
-
-                self.paint_the_ground("yellow")
+                move_to(previous[0], previous[1])
 
             sleep(self.solution_period / 1000.0)
+
+        print("Exploration complete!")
+        print("Visited squares:", visited)      #wow look how professinaol I am
+        print("Dead ends:", dead_ends)
+
+        # BUILD PATH FROM START TO FINISH
+        finish = (rows - 1, cols - 1)
+
+        if finish not in visited:
+            print("Finish not reachable")
+            return
+
+        path = []
+        position = finish
+
+        while position != (0, 0):
+            path.append(position)
+            position = parents[position]
+
+        path.append((0, 0))
+        path.reverse()
+
+        print("Solution path:", path)
+
+        # Character is back at the start
+        # Follow the discovered solution        wow these comments are soooooooog good
+        for next_row, next_col in path[1:]:
+
+            move_to(next_row, next_col)
+
+            self.paint_the_ground("green")
+
+            sleep(self.solution_period / 1000.0)
+
+        print("maze solved!")
 
 
 
